@@ -1,0 +1,103 @@
+# Docker Compose version is no longer required in v2+
+
+services:
+  # MySQL Database Service
+  mysql:
+    image: mysql:8.0
+    container_name: web3-jobs-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-web3_jobs}
+      MYSQL_USER: ${MYSQL_USER:-web3user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-userpassword}
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    networks:
+      - web3-jobs-network
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --sql_mode=STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Web3 Jobs Application Service
+  web3-jobs-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: web3-jobs-app
+    restart: unless-stopped
+    environment:
+      # Database Configuration
+      DATABASE_URL: mysql://${MYSQL_USER:-web3user}:${MYSQL_PASSWORD:-userpassword}@mysql:3306/${MYSQL_DATABASE:-web3_jobs}
+      
+      # Application Configuration
+      NODE_ENV: production
+      PORT: 3000
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+      
+      # Cron Configuration
+      CRON_SECRET: ${CRON_SECRET:-your-secret-key-here}
+      
+      # Notification Configuration
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-}
+      
+      # External API Configuration
+      LEVER_API_KEY: ${LEVER_API_KEY:-}
+      GREENHOUSE_API_KEY: ${GREENHOUSE_API_KEY:-}
+      
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - web3-jobs-network
+    volumes:
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Optional: phpMyAdmin for database management
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: web3-jobs-phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+    ports:
+      - "${PHPMYADMIN_PORT:-8080}:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - web3-jobs-network
+    profiles:
+      - tools  # Use 'docker-compose --profile tools up' to include this service
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  web3-jobs-network:
+    driver: bridge

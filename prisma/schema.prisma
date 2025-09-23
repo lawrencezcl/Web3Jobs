@@ -1,0 +1,62 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model Job {
+  id              String   @id @default(cuid())
+  title           String   @db.VarChar(500)
+  company         String   @db.VarChar(255)
+  location        String?  @db.VarChar(255)
+  country         String?  @db.VarChar(100)
+  remote          Boolean  @default(true)
+  tags            String?  @db.Text
+  url             String   @db.VarChar(1000)
+  source          String   @db.VarChar(100)
+  postedAt        DateTime?
+  createdAt       DateTime @default(now())
+  salary          String?  @db.VarChar(255)
+  salaryMin       Int?
+  salaryMax       Int?
+  currency        String?  @db.VarChar(10)
+  employmentType  String?  @db.VarChar(100)
+  seniorityLevel  String?  @db.VarChar(100)
+  description     String?  @db.LongText
+
+  @@index([createdAt, postedAt, source])
+  @@index([country, remote])
+  @@index([salaryMin, salaryMax])
+  @@index([seniorityLevel])
+}
+
+model Subscriber {
+  id         String   @id @default(cuid())
+  type       String   @db.VarChar(50)
+  identifier String   @db.VarChar(255)
+  topics     String?  @db.Text
+  createdAt  DateTime @default(now())
+
+  @@index([type, identifier])
+}
+
+model CrawlLog {
+  id           String   @id @default(cuid())
+  source       String   @db.VarChar(100)
+  startTime    DateTime
+  endTime      DateTime?
+  status       String   @db.VarChar(50)
+  jobsFound    Int      @default(0)
+  jobsInserted Int      @default(0)
+  errors       String?  @db.Text
+  metadata     String?  @db.Text
+  createdAt    DateTime @default(now())
+
+  @@index([source, startTime])
+  @@index([status, startTime])
+}
