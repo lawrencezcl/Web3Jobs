@@ -5,7 +5,7 @@
  * Creates initial test data for local development
  */
 
-const { PrismaClient } = require('@prisma/client')
+import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 

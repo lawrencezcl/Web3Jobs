@@ -27,7 +27,7 @@ model Job {
   currency        String?  @db.VarChar(10)
   employmentType  String?  @db.VarChar(100)
   seniorityLevel  String?  @db.VarChar(100)
-  description     String?  @db.LongText
+  description     String?  @db.Text
 
   @@index([createdAt, postedAt, source])
   @@index([country, remote])

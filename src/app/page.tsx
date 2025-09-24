@@ -1,7 +1,7 @@
-import JobsPage from '@/components/jobs-page'
+import EnhancedJobsPage from '@/components/enhanced-jobs-page'
 
 export const dynamic = 'force-dynamic'
 
 export default function Page() {
-  return <JobsPage />
+  return <EnhancedJobsPage />
 }
