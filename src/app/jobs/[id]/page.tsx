@@ -1,9 +1,9 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { prisma } from '@/lib/db'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
+import { prisma } from '../../../lib/db'
+import { Badge } from '../../../components/ui/badge'
+import { Button } from '../../../components/ui/button'
+import { Card } from '../../../components/ui/card'
 import Link from 'next/link'
 
 type Props = {
@@ -99,7 +99,7 @@ export default async function JobDetailPage({ params }: Props) {
               <span>•</span>
               <span>{job.remote ? 'Remote' : job.location || 'Location TBD'}</span>
               <span>•</span>
-              <Badge variant="outline" className="text-sm">
+              <Badge className="text-sm border border-gray-300">
                 {job.source}
               </Badge>
             </div>
@@ -157,7 +157,7 @@ export default async function JobDetailPage({ params }: Props) {
 
           {/* Apply Button */}
           <div className="pt-6">
-            <Button asChild size="lg" className="w-full md:w-auto">
+            <Button className="w-full md:w-auto text-lg px-6 py-3">
               <a 
                 href={job.url} 
                 target="_blank" 

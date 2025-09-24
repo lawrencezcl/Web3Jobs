@@ -1,5 +1,5 @@
 // Monitoring and logging utilities
-import { prisma } from '@/lib/db'
+import { prisma } from './db'
 
 export interface CrawlLog {
   id: string

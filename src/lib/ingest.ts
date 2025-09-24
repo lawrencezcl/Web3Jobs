@@ -1,9 +1,9 @@
-import { prisma } from '@/lib/db'
-import { config } from '@/lib/config'
-import { fetchLever } from '@/lib/connectors/lever'
-import { fetchGreenhouse } from '@/lib/connectors/greenhouse'
-import { fetchRemoteOK } from '@/lib/connectors/remoteok'
-import { fetchRSS } from '@/lib/connectors/rss'
+import { prisma } from './db'
+import { config } from './config'
+import { fetchLever } from './connectors/lever'
+import { fetchGreenhouse } from './connectors/greenhouse'
+import { fetchRemoteOK } from './connectors/remoteok'
+import { fetchRSS } from './connectors/rss'
 
 export async function ingestAll() {
   const sources: string[] = []

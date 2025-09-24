@@ -1,6 +1,6 @@
-import { ingestAll } from '@/lib/ingest'
-import { prisma } from '@/lib/db'
-import { notifySubscribers } from '@/lib/notify'
+import { ingestAll } from '../../../lib/ingest'
+import { prisma } from '../../../lib/db'
+import { notifySubscribers } from '../../../lib/notify'
 export const runtime = 'nodejs'
 
 export async function POST(req: Request) {

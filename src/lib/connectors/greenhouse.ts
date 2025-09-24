@@ -1,4 +1,4 @@
-import { sha256, parseTags } from '@/lib/utils'
+import { sha256, parseTags } from '../utils'
 type Job = {
   id: string; title: string; company: string; location?: string;
   remote: boolean; tags: string[]; url: string; source: string;

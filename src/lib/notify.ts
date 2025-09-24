@@ -1,5 +1,5 @@
-import { prisma } from '@/lib/db'
-import { matchTopics } from '@/lib/utils'
+import { prisma } from './db'
+import { matchTopics } from './utils'
 
 async function sendTelegram(chatId: string, text: string) {
   const token = process.env.TELEGRAM_BOT_TOKEN

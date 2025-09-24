@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { searchMockJobs } from '@/lib/mock-data'
+import { searchMockJobs } from '../../../../lib/mock-data'
 
 export const runtime = 'nodejs'
 

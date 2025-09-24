@@ -1,5 +1,5 @@
-import { sha256, parseTags, parseSalary, parseSeniorityLevel, parseCountry } from '@/lib/utils'
-import { fetchWithRetry, ConnectorError, logConnectorError } from '@/lib/error-handling'
+import { sha256, parseTags, parseSalary, parseSeniorityLevel, parseCountry } from '../utils'
+import { fetchWithRetry, ConnectorError, logConnectorError } from '../error-handling'
 type Job = {
   id: string; title: string; company: string; location?: string; country?: string;
   remote: boolean; tags: string[]; url: string; source: string;
