@@ -34,11 +34,12 @@ export async function GET(request: Request) {
         return Response.json({ error: 'Invalid source' }, { status: 400 })
     }
 
+    const resultData = result as any
     return Response.json({
       success: true,
       source,
-      jobCount: Array.isArray(result.data) ? result.data.length : 0,
-      sampleJobs: Array.isArray(result.data) ? result.data.slice(0, 2) : []
+      jobCount: Array.isArray(resultData.data) ? resultData.data.length : 0,
+      sampleJobs: Array.isArray(resultData.data) ? resultData.data.slice(0, 2) : []
     })
   } catch (error) {
     console.error(`Error testing ${source}:`, error)
