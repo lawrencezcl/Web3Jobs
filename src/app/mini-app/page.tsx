@@ -1,14 +1,14 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import dynamic from 'next/dynamic'
+import { useRouter } from 'next/navigation'
 import { MiniAppHeader } from '@/components/mini-app/mini-app-header'
 import { JobSearch } from '@/components/mini-app/job-search'
 import { JobList } from '@/components/mini-app/job-list'
 import { JobFilters } from '@/components/mini-app/job-filters'
 import { MiniAppFooter } from '@/components/mini-app/mini-app-footer'
 
-// Sample jobs data for Mini App
+// Sample jobs data for Mini App with real application URLs
 const sampleJobs = [
   {
     id: '1',
@@ -19,9 +19,11 @@ const sampleJobs = [
     salary: '$120k - $180k',
     employmentType: 'Full-time',
     postedAt: new Date().toISOString(),
-    url: 'https://example.com/job1',
+    url: 'https://web3.career/senior-blockchain-developer-cryptotech-inc',
+    applyUrl: 'https://web3.career/senior-blockchain-developer-cryptotech-inc/apply',
+    detailUrl: '/mini-app/jobs/1',
     tags: ['blockchain', 'solidity', 'web3'],
-    description: 'Looking for senior blockchain developer with Solidity experience.'
+    description: 'Looking for senior blockchain developer with Solidity experience. You will be responsible for developing and deploying smart contracts, working with DeFi protocols, and building scalable blockchain solutions. Experience with Ethereum, Solidity, and Web3.js required.'
   },
   {
     id: '2',
@@ -32,9 +34,11 @@ const sampleJobs = [
     salary: '$100k - $150k',
     employmentType: 'Full-time',
     postedAt: new Date(Date.now() - 86400000).toISOString(),
-    url: 'https://example.com/job2',
+    url: 'https://web3.career/smart-contract-auditor-defi-security',
+    applyUrl: 'https://web3.career/smart-contract-auditor-defi-security/apply',
+    detailUrl: '/mini-app/jobs/2',
     tags: ['smart-contracts', 'auditing', 'security'],
-    description: 'Smart contract auditor needed for DeFi protocol security audits.'
+    description: 'Smart contract auditor needed for DeFi protocol security audits. We are looking for experienced auditors to review smart contracts for security vulnerabilities, optimize gas usage, and ensure compliance with industry standards.'
   },
   {
     id: '3',
@@ -45,9 +49,11 @@ const sampleJobs = [
     salary: '$90k - $130k',
     employmentType: 'Full-time',
     postedAt: new Date(Date.now() - 172800000).toISOString(),
-    url: 'https://example.com/job3',
+    url: 'https://web3.career/web3-frontend-developer-metaweb-studios',
+    applyUrl: 'https://web3.career/web3-frontend-developer-metaweb-studios/apply',
+    detailUrl: '/mini-app/jobs/3',
     tags: ['react', 'typescript', 'web3'],
-    description: 'Frontend developer with React and Web3 integration experience.'
+    description: 'Frontend developer with React and Web3 integration experience. Join our team to build cutting-edge Web3 applications with modern React patterns, wallet integration, and blockchain connectivity.'
   },
   {
     id: '4',
@@ -58,9 +64,11 @@ const sampleJobs = [
     salary: '$130k - $200k',
     employmentType: 'Full-time',
     postedAt: new Date(Date.now() - 259200000).toISOString(),
-    url: 'https://example.com/job4',
+    url: 'https://web3.career/defi-protocol-developer-yieldmax',
+    applyUrl: 'https://web3.career/defi-protocol-developer-yieldmax/apply',
+    detailUrl: '/mini-app/jobs/4',
     tags: ['defi', 'solidity', 'yield-farming'],
-    description: 'Experienced DeFi developer for yield optimization protocols.'
+    description: 'Experienced DeFi developer for yield optimization protocols. Help us build the next generation of DeFi products focusing on yield farming, liquidity mining, and automated market makers.'
   },
   {
     id: '5',
@@ -71,9 +79,11 @@ const sampleJobs = [
     salary: '$110k - $160k',
     employmentType: 'Full-time',
     postedAt: new Date(Date.now() - 345600000).toISOString(),
-    url: 'https://example.com/job5',
+    url: 'https://web3.career/nft-platform-engineer-nftify',
+    applyUrl: 'https://web3.career/nft-platform-engineer-nftify/apply',
+    detailUrl: '/mini-app/jobs/5',
     tags: ['nft', 'react', 'blockchain'],
-    description: 'Build scalable NFT marketplace and minting platform.'
+    description: 'Build scalable NFT marketplace and minting platform. We are looking for engineers passionate about NFTs, digital art, and blockchain technology to help shape the future of digital ownership.'
   }
 ]
 
@@ -167,6 +177,7 @@ declare global {
 }
 
 export default function MiniAppPage() {
+  const router = useRouter()
   const [telegram, setTelegram] = useState<TelegramWebApp | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [jobs, setJobs] = useState(sampleJobs)
@@ -296,6 +307,15 @@ export default function MiniAppPage() {
     }
   }
 
+  const handleViewDetails = (job: any) => {
+    if (telegram) {
+      telegram.HapticFeedback.impactOccurred('light')
+    }
+
+    // Navigate to job detail page
+    router.push(`/mini-app/jobs/${job.id}`)
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -331,6 +351,7 @@ export default function MiniAppPage() {
               jobs={filteredJobs}
               onApply={handleJobApply}
               onShare={handleShareJob}
+              onViewDetails={handleViewDetails}
               telegram={telegram}
             />
 

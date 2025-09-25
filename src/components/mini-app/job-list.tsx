@@ -14,6 +14,8 @@ interface Job {
   employmentType: string
   postedAt: string
   url: string
+  applyUrl: string
+  detailUrl: string
   tags: string[]
   description: string
 }
@@ -31,10 +33,11 @@ interface JobListProps {
   jobs: Job[]
   onApply: (jobUrl: string) => void
   onShare: (job: Job) => void
+  onViewDetails: (job: Job) => void
   telegram: TelegramWebApp | null
 }
 
-export function JobList({ jobs, onApply, onShare, telegram }: JobListProps) {
+export function JobList({ jobs, onApply, onShare, onViewDetails, telegram }: JobListProps) {
   const formatSalary = (salary: string) => {
     if (salary.includes('k')) {
       return salary.replace('k', 'k')
@@ -44,7 +47,19 @@ export function JobList({ jobs, onApply, onShare, telegram }: JobListProps) {
 
   const getRelativeTime = (dateString: string) => {
     try {
-      return formatDistanceToNow(new Date(dateString), { addSuffix: true })
+      const date = new Date(dateString)
+      const now = new Date()
+      const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24))
+
+      if (diffInDays === 0) {
+        return 'Today'
+      } else if (diffInDays === 1) {
+        return 'Yesterday'
+      } else if (diffInDays < 7) {
+        return `${diffInDays} days ago`
+      } else {
+        return formatDistanceToNow(date, { addSuffix: true })
+      }
     } catch (error) {
       return 'Recently'
     }
@@ -65,11 +80,11 @@ export function JobList({ jobs, onApply, onShare, telegram }: JobListProps) {
     }
   }
 
-  const handleApply = (jobUrl: string) => {
+  const handleApply = (job: Job) => {
     if (telegram) {
       telegram.HapticFeedback.impactOccurred('medium')
     }
-    onApply(jobUrl)
+    onApply(job.applyUrl)
   }
 
   const handleShare = (job: Job) => {
@@ -89,7 +104,10 @@ export function JobList({ jobs, onApply, onShare, telegram }: JobListProps) {
           {/* Header */}
           <div className="flex items-start justify-between mb-3">
             <div className="flex-1">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+              <h3
+                className="text-lg font-semibold text-gray-900 dark:text-white mb-1 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                onClick={() => onViewDetails(job)}
+              >
                 {job.title}
               </h3>
               <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
@@ -98,6 +116,17 @@ export function JobList({ jobs, onApply, onShare, telegram }: JobListProps) {
               </div>
             </div>
             <div className="flex items-center space-x-2 ml-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onViewDetails(job)}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              </Button>
               <Button
                 variant="ghost"
                 size="sm"
@@ -159,14 +188,27 @@ export function JobList({ jobs, onApply, onShare, telegram }: JobListProps) {
             )}
           </div>
 
-          {/* Action Button */}
-          <Button
-            onClick={() => handleApply(job.url)}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
-          >
-            <span>Apply Now</span>
-            <ExternalLink className="w-4 h-4" />
-          </Button>
+          {/* Action Buttons */}
+          <div className="flex space-x-2">
+            <Button
+              onClick={() => handleApply(job)}
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
+            >
+              <span>Apply Now</span>
+              <ExternalLink className="w-4 h-4" />
+            </Button>
+            <Button
+              onClick={() => onViewDetails(job)}
+              variant="outline"
+              className="flex-1 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
+            >
+              <span>Details</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </Button>
+          </div>
         </div>
       ))}
     </div>
