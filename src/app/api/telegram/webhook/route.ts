@@ -98,10 +98,22 @@ export async function POST(req: Request) {
 
   const token = process.env.TELEGRAM_BOT_TOKEN
 
+  // Debug logging
+  console.log('Telegram webhook received:', {
+    chatId,
+    text,
+    token: token ? 'present' : 'missing',
+    secret: process.env.TELEGRAM_WEBHOOK_SECRET ? 'present' : 'missing'
+  })
+
   async function reply(text: string, parse_mode: string = 'Markdown') {
-    if (!token) return
+    if (!token) {
+      console.log('No telegram token configured')
+      return
+    }
     try {
-      await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      console.log('Sending telegram message to:', chatId, 'Text length:', text.length)
+      const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
@@ -111,8 +123,13 @@ export async function POST(req: Request) {
           disable_web_page_preview: false
         })
       })
+      const result = await response.json()
+      console.log('Telegram API response:', result)
+      if (!result.ok) {
+        console.error('Telegram API error:', result)
+      }
     } catch (error) {
-      console.error('Telegram API error:', error)
+      console.error('Telegram API fetch error:', error)
     }
   }
 
