@@ -84,7 +84,8 @@ async function searchJobs(query: string = '', tag: string = '', remote: boolean 
 export async function POST(req: Request) {
   const { searchParams } = new URL(req.url)
   const secret = searchParams.get('secret') || ''
-  if (process.env.TELEGRAM_WEBHOOK_SECRET && secret !== process.env.TELEGRAM_WEBHOOK_SECRET) {
+  const webhookSecret = process.env.TELEGRAM_WEBHOOK_SECRET || 'web3jobs-telegram-webhook-secret'
+  if (secret !== webhookSecret) {
     return new Response('Unauthorized', { status: 401 })
   }
   const update = await req.json()
