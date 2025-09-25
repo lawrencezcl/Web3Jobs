@@ -132,8 +132,9 @@ async function saveJobs(jobs: InJob[]) {
       n++
     } catch (error) {
       // Ignore duplicate entries and other errors
-      if (!error.message.includes('Unique constraint')) {
-        console.warn('Failed to save job:', error.message)
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      if (!errorMessage.includes('Unique constraint')) {
+        console.warn('Failed to save job:', errorMessage)
       }
     }
   }
