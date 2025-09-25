@@ -19,6 +19,7 @@ export async function ingestAll() {
     promises.push(
       fetchLever(comp)
         .then(jobs => {
+          console.log(`Lever ${comp} returned ${jobs.length} jobs`)
           const count = saveJobs(jobs)
           sources.push(`lever:${comp}`)
           return count
@@ -36,6 +37,7 @@ export async function ingestAll() {
     promises.push(
       fetchGreenhouse(board)
         .then(jobs => {
+          console.log(`Greenhouse ${board} returned ${jobs.length} jobs`)
           const count = saveJobs(jobs)
           sources.push(`greenhouse:${board}`)
           return count
@@ -53,6 +55,7 @@ export async function ingestAll() {
     promises.push(
       fetchRemoteOK()
         .then(jobs => {
+          console.log(`RemoteOK returned ${jobs.length} jobs`)
           const count = saveJobs(jobs)
           sources.push('remoteok')
           return count
@@ -70,6 +73,7 @@ export async function ingestAll() {
     promises.push(
       fetchRSS(feed, 'rss')
         .then(jobs => {
+          console.log(`RSS ${feed} returned ${jobs.length} jobs`)
           const count = saveJobs(jobs)
           sources.push(`rss:${feed}`)
           return count
@@ -106,37 +110,52 @@ type InJob = {
 }
 
 async function saveJobs(jobs: InJob[]) {
-  if (!jobs.length) return 0
+  if (!jobs.length) {
+    console.log('No jobs to save')
+    return 0
+  }
 
+  console.log(`Attempting to save ${jobs.length} jobs`)
   let n = 0
   for (const j of jobs) {
     try {
+      // Validate data before saving
+      if (!j.title || !j.company || !j.url) {
+        console.warn('Skipping job with missing required fields:', { title: j.title, company: j.company, url: j.url })
+        continue
+      }
+
       await prisma.job.create({
         data: {
           id: j.id,
-          title: j.title,
-          company: j.company,
-          location: j.location || null,
+          title: j.title.substring(0, 500), // Ensure title fits
+          company: j.company.substring(0, 255), // Ensure company fits
+          location: j.location ? j.location.substring(0, 255) : null,
           remote: j.remote,
           tags: (j.tags || []).join(','),
-          url: j.url,
-          source: j.source,
+          url: j.url.substring(0, 1000), // Ensure URL fits
+          source: j.source.substring(0, 100),
           postedAt: j.postedAt || null,
           createdAt: j.createdAt,
-          salary: j.salary || null,
-          currency: j.currency || null,
-          employmentType: j.employmentType || null,
-          description: j.description || null
+          salary: j.salary ? j.salary.substring(0, 255) : null,
+          currency: j.currency ? j.currency.substring(0, 10) : null,
+          employmentType: j.employmentType ? j.employmentType.substring(0, 100) : null,
+          description: j.description ? j.description.substring(0, 5000) : null // Limit description length
         }
       })
       n++
     } catch (error) {
       // Ignore duplicate entries and other errors
       const errorMessage = error instanceof Error ? error.message : String(error)
-      if (!errorMessage.includes('Unique constraint')) {
-        console.warn('Failed to save job:', errorMessage)
+      if (!errorMessage.includes('Unique constraint') && !errorMessage.includes('duplicate key')) {
+        console.warn('Failed to save job:', errorMessage, 'Job details:', {
+          title: j.title?.substring(0, 50),
+          company: j.company?.substring(0, 30),
+          url: j.url?.substring(0, 50)
+        })
       }
     }
   }
+  console.log(`Successfully saved ${n} out of ${jobs.length} jobs`)
   return n
 }
