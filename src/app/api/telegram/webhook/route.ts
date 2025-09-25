@@ -347,6 +347,77 @@ Start exploring Web3 opportunities! 🚀`
                  `💡 Use /search to find opportunities!`
     await reply(stats)
 
+  } else if (/^\/postjob/i.test(text)) {
+    // Admin command to post a job to channel
+    const adminUserIds = process.env.ADMIN_USER_IDS?.split(',').map(id => id.trim()) || []
+
+    if (!adminUserIds.includes(chatId)) {
+      await reply('❌ *Unauthorized:* This command is for administrators only.')
+      return
+    }
+
+    const jobData = text.replace(/^\/postjob\s*/i, '').trim()
+
+    if (!jobData) {
+      await reply(`📝 *Post Job to Channel*\n\nSend job details in JSON format:\n\n\`\`\`json\n{\n  "title": "Job Title",\n  "company": "Company Name",\n  "description": "Job description",\n  "salary": "$X - Y",\n  "location": "Remote/Location",\n  "remote": true,\n  "tags": ["blockchain", "solidity"]\n}\n\`\`\`\n\n*Note:* This posts directly to @web3jobs88 channel`)
+      return
+    }
+
+    try {
+      const job = JSON.parse(jobData)
+
+      // Validate required fields
+      if (!job.title || !job.company || !job.description) {
+        await reply('❌ *Missing required fields:* title, company, and description are required.')
+        return
+      }
+
+      // Post to channel
+      const response = await fetch('https://web3-jobs-l15280ijg-lawrencezcls-projects.vercel.app/api/post-job-to-channel', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.JOB_POSTING_TOKEN || 'web3jobs-posting-secret'}`
+        },
+        body: JSON.stringify({
+          id: `manual_${Date.now()}`,
+          title: job.title,
+          company: job.company,
+          description: job.description,
+          salary: job.salary || 'Competitive',
+          location: job.location || 'Remote',
+          remote: job.remote || false,
+          employmentType: job.employmentType || 'Full-time',
+          postedAt: new Date().toISOString(),
+          url: job.url || '#',
+          applyUrl: job.applyUrl || job.url || '#',
+          tags: job.tags || []
+        })
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        await reply(`✅ *Job posted successfully to @web3jobs88 channel!*\n\nProcessing time: ${result.processingTime}ms`)
+      } else {
+        await reply(`❌ *Failed to post job:* ${result.error || 'Unknown error'}`)
+      }
+
+    } catch (error) {
+      await reply('❌ *Invalid JSON format.* Please check your job data and try again.')
+    }
+
+  } else if (/^\/ingest/i.test(text)) {
+    // Admin command to test job ingestion
+    const adminUserIds = process.env.ADMIN_USER_IDS?.split(',').map(id => id.trim()) || []
+
+    if (!adminUserIds.includes(chatId)) {
+      await reply('❌ *Unauthorized:* This command is for administrators only.')
+      return
+    }
+
+    await reply(`📝 *Test Job Ingestion*\n\nSend job data to test ingestion and auto-posting to @web3jobs88 channel.\n\nUse /ingest with JSON data or contact the API directly.`)
+
   } else {
     // Fallback for unknown commands or general messages
     const fallback = `🤖 I didn't understand that. Try these commands:\n\n` +
