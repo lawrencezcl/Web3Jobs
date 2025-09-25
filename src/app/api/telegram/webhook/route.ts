@@ -82,38 +82,65 @@ async function searchJobs(query: string = '', tag: string = '', remote: boolean 
 }
 
 export async function POST(req: Request) {
+  const startTime = Date.now()
+  const request_id = Math.random().toString(36).substring(7)
+
+  // Log the incoming request
+  console.log(`📥 [${request_id}] Telegram webhook request received at ${new Date().toISOString()}`)
+  console.log(`📥 [${request_id}] URL: ${req.url}`)
+  console.log(`📥 [${request_id}] Method: ${req.method}`)
+  console.log(`📥 [${request_id}] Headers:`, Object.fromEntries(req.headers.entries()))
+
   const { searchParams } = new URL(req.url)
   const secret = searchParams.get('secret') || ''
   const webhookSecret = process.env.TELEGRAM_WEBHOOK_SECRET || 'web3jobs-telegram-webhook-secret'
+
+  console.log(`🔐 [${request_id}] Secret check: provided=${secret ? 'yes' : 'no'}, expected=${webhookSecret ? 'yes' : 'no'}`)
+
   if (secret !== webhookSecret) {
+    console.log(`❌ [${request_id}] Unauthorized: secret mismatch`)
     return new Response('Unauthorized', { status: 401 })
   }
-  const update = await req.json()
+
+  let update
+  try {
+    update = await req.json()
+    console.log(`📦 [${request_id}] Parsed update:`, JSON.stringify(update, null, 2))
+  } catch (error) {
+    console.log(`❌ [${request_id}] Failed to parse JSON:`, error)
+    return new Response('Invalid JSON', { status: 400 })
+  }
 
   const message = update.message || update.edited_message
-  if (!message) return Response.json({ ok: true })
+  if (!message) {
+    console.log(`⚠️ [${request_id}] No message in update`)
+    return Response.json({ ok: true })
+  }
 
   const chatId = String(message.chat?.id || '')
   const text = String(message.text || '')
-  if (!chatId || !text) return Response.json({ ok: true })
+
+  console.log(`💬 [${request_id}] Message from chat ${chatId}: "${text}"`)
+
+  if (!chatId || !text) {
+    console.log(`⚠️ [${request_id}] Missing chatId or text`)
+    return Response.json({ ok: true })
+  }
 
   const token = process.env.TELEGRAM_BOT_TOKEN || '8454955176:AAHQDy1DjOp8vq3YBwUcFB7SD89BD-krC7Q'
 
-  // Debug logging
-  console.log('Telegram webhook received:', {
-    chatId,
-    text,
-    token: token ? 'present' : 'missing',
-    secret: process.env.TELEGRAM_WEBHOOK_SECRET ? 'present' : 'missing'
-  })
+  console.log(`🤖 [${request_id}] Bot token: ${token ? 'present' : 'missing'}`)
 
   async function reply(text: string, parse_mode: string = 'Markdown') {
+    console.log(`📤 [${request_id}] Attempting to send reply to chat ${chatId}`)
+    console.log(`📤 [${request_id}] Reply text length: ${text.length}`)
+
     if (!token) {
-      console.log('No telegram token configured')
+      console.log(`❌ [${request_id}] No telegram token configured`)
       return
     }
     try {
-      console.log('Sending telegram message to:', chatId, 'Text length:', text.length)
+      console.log(`📡 [${request_id}] Sending to Telegram API...`)
       const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -125,12 +152,14 @@ export async function POST(req: Request) {
         })
       })
       const result = await response.json()
-      console.log('Telegram API response:', result)
+      console.log(`📥 [${request_id}] Telegram API response:`, JSON.stringify(result, null, 2))
       if (!result.ok) {
-        console.error('Telegram API error:', result)
+        console.error(`❌ [${request_id}] Telegram API error:`, result)
+      } else {
+        console.log(`✅ [${request_id}] Message sent successfully`)
       }
     } catch (error) {
-      console.error('Telegram API fetch error:', error)
+      console.error(`❌ [${request_id}] Telegram API fetch error:`, error)
     }
   }
 
@@ -272,6 +301,10 @@ Start exploring Web3 opportunities! 🚀`
                      `• /help - More info`
     await reply(fallback, undefined)
   }
+
+  const endTime = Date.now()
+  const processingTime = endTime - startTime
+  console.log(`✅ [${request_id}] Request completed in ${processingTime}ms`)
 
   return Response.json({ ok: true })
 }
