@@ -13,7 +13,7 @@ export async function GET(req: Request) {
     database: {
       connected: false,
       totalJobs: 0,
-      error: null
+      error: null as string | null
     },
     telegram: {
       botToken: process.env.TELEGRAM_BOT_TOKEN ? process.env.TELEGRAM_BOT_TOKEN.substring(0, 10) + '...' : null,
@@ -27,7 +27,7 @@ export async function GET(req: Request) {
     debug.database.connected = true
     debug.database.totalJobs = totalJobs
   } catch (error) {
-    debug.database.error = error.message
+    debug.database.error = error instanceof Error ? error.message : String(error)
   }
 
   return Response.json(debug, { status: 200 })
