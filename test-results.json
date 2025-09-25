@@ -1,0 +1,506 @@
+{
+  "config": {
+    "configFile": "/root/Web3Jobs/playwright.config.js",
+    "rootDir": "/root/Web3Jobs",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/root/Web3Jobs/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/root/Web3Jobs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.1",
+    "workers": 4,
+    "webServer": {
+      "command": "npm start",
+      "port": 3000,
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "playwright-ui-test.spec.js",
+      "file": "playwright-ui-test.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Web3 Jobs Application UI/UX Testing",
+          "file": "playwright-ui-test.spec.js",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "1. Navigate to main interface and take screenshots",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 14540,
+                      "error": {
+                        "message": "TimeoutError: page.goto: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "TimeoutError: page.goto: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/\", waiting until \"load\"\u001b[22m\n\n    at /root/Web3Jobs/playwright-ui-test.spec.js:20:16",
+                        "location": {
+                          "file": "/root/Web3Jobs/playwright-ui-test.spec.js",
+                          "column": 16,
+                          "line": 20
+                        },
+                        "snippet": "  18 |\n  19 |     // Navigate to the main page\n> 20 |     await page.goto('http://localhost:3000');\n     |                ^\n  21 |\n  22 |     // Wait for page to load\n  23 |     await page.waitForLoadState('networkidle');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/root/Web3Jobs/playwright-ui-test.spec.js",
+                            "column": 16,
+                            "line": 20
+                          },
+                          "message": "TimeoutError: page.goto: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/\", waiting until \"load\"\u001b[22m\n\n\n  18 |\n  19 |     // Navigate to the main page\n> 20 |     await page.goto('http://localhost:3000');\n     |                ^\n  21 |\n  22 |     // Wait for page to load\n  23 |     await page.waitForLoadState('networkidle');\n    at /root/Web3Jobs/playwright-ui-test.spec.js:20:16"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "🔍 Testing: Navigate to main interface and take screenshots\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-25T08:15:54.812Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/root/Web3Jobs/test-results/playwright-ui-test-Web3-Jo-a320a-erface-and-take-screenshots-chromium/test-failed-1.png"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/root/Web3Jobs/playwright-ui-test.spec.js",
+                        "column": 16,
+                        "line": 20
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "6bb41621297fc48f995d-78b4261a520e7bda42ee",
+              "file": "playwright-ui-test.spec.js",
+              "line": 16,
+              "column": 3
+            },
+            {
+              "title": "2. Test search functionality with \"solidity\"",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 12179,
+                      "error": {
+                        "message": "TimeoutError: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[placeholder*=\"search\"], input[type=\"search\"], .search-input') to be visible\u001b[22m\n",
+                        "stack": "TimeoutError: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[placeholder*=\"search\"], input[type=\"search\"], .search-input') to be visible\u001b[22m\n\n    at /root/Web3Jobs/playwright-ui-test.spec.js:55:23",
+                        "location": {
+                          "file": "/root/Web3Jobs/playwright-ui-test.spec.js",
+                          "column": 23,
+                          "line": 55
+                        },
+                        "snippet": "  53 |\n  54 |     // Wait for search input to be visible\n> 55 |     await searchInput.waitFor({ state: 'visible' });\n     |                       ^\n  56 |\n  57 |     // Take screenshot before search\n  58 |     await page.screenshot({ path: 'screenshots/before-search.png' });"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/root/Web3Jobs/playwright-ui-test.spec.js",
+                            "column": 23,
+                            "line": 55
+                          },
+                          "message": "TimeoutError: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[placeholder*=\"search\"], input[type=\"search\"], .search-input') to be visible\u001b[22m\n\n\n  53 |\n  54 |     // Wait for search input to be visible\n> 55 |     await searchInput.waitFor({ state: 'visible' });\n     |                       ^\n  56 |\n  57 |     // Take screenshot before search\n  58 |     await page.screenshot({ path: 'screenshots/before-search.png' });\n    at /root/Web3Jobs/playwright-ui-test.spec.js:55:23"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "🔍 Testing: Search functionality with \"solidity\"\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-25T08:16:11.030Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/root/Web3Jobs/test-results/playwright-ui-test-Web3-Jo-1424b-unctionality-with-solidity--chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/root/Web3Jobs/test-results/playwright-ui-test-Web3-Jo-1424b-unctionality-with-solidity--chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/root/Web3Jobs/playwright-ui-test.spec.js",
+                        "column": 23,
+                        "line": 55
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "6bb41621297fc48f995d-3e8766cdc7619faa05c5",
+              "file": "playwright-ui-test.spec.js",
+              "line": 45,
+              "column": 3
+            },
+            {
+              "title": "3. Test filter functionality (remote/onsite, tags)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1965,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "🔍 Testing: Filter functionality\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-25T08:16:24.660Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6bb41621297fc48f995d-ea4c3d9aa69050bc857e",
+              "file": "playwright-ui-test.spec.js",
+              "line": 89,
+              "column": 3
+            },
+            {
+              "title": "4. Test mock mode toggle button",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1859,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "🔍 Testing: Mock mode toggle\n"
+                        },
+                        {
+                          "text": "⚠️ Mock toggle not found on page\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-25T08:16:26.843Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6bb41621297fc48f995d-fe38f4597d8467415c17",
+              "file": "playwright-ui-test.spec.js",
+              "line": 142,
+              "column": 3
+            },
+            {
+              "title": "5. Navigate to test page and test mock data display",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2710,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "🔍 Testing: Mock data display on test page\n"
+                        },
+                        {
+                          "text": "📊 Found 0 mock data elements\n"
+                        },
+                        {
+                          "text": "📊 Found 0 job cards on test page\n"
+                        },
+                        {
+                          "text": "✅ Test page mock data display test completed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-25T08:16:28.748Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6bb41621297fc48f995d-f7cf981dc67d549fe4be",
+              "file": "playwright-ui-test.spec.js",
+              "line": 182,
+              "column": 3
+            },
+            {
+              "title": "6. Test responsive design by resizing viewport",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5604,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "🔍 Testing: Responsive design\n"
+                        },
+                        {
+                          "text": "🖥️ Desktop view screenshot taken\n"
+                        },
+                        {
+                          "text": "📱 Tablet view screenshot taken\n"
+                        },
+                        {
+                          "text": "📱 Mobile view screenshot taken\n"
+                        },
+                        {
+                          "text": "📱 Small mobile view screenshot taken\n"
+                        },
+                        {
+                          "text": "🧭 Navigation menu visible: false\n"
+                        },
+                        {
+                          "text": "🍔 Hamburger menu visible: false\n"
+                        },
+                        {
+                          "text": "✅ Responsive design test completed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-25T08:16:31.498Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6bb41621297fc48f995d-9c351730edb1d2abfb37",
+              "file": "playwright-ui-test.spec.js",
+              "line": 216,
+              "column": 3
+            },
+            {
+              "title": "7. Test job cards content and structure",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1655,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "🔍 Testing: Job cards content and structure\n"
+                        },
+                        {
+                          "text": "📊 Testing 0 job cards\n"
+                        },
+                        {
+                          "text": "✅ Job cards content and structure test completed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-25T08:16:37.132Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6bb41621297fc48f995d-de59ca97d9e7ba2fc200",
+              "file": "playwright-ui-test.spec.js",
+              "line": 255,
+              "column": 3
+            },
+            {
+              "title": "8. Test navigation and links",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1591,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "🔍 Testing: Navigation and links\n"
+                        },
+                        {
+                          "text": "🔗 Found 0 navigation links\n"
+                        },
+                        {
+                          "text": "✅ Navigation and links test completed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-25T08:16:38.816Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6bb41621297fc48f995d-19501ec78a2ca580501e",
+              "file": "playwright-ui-test.spec.js",
+              "line": 306,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-09-25T08:15:52.843Z",
+    "duration": 47676.320999999996,
+    "expected": 6,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}
