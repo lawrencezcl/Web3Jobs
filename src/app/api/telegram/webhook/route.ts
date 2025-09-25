@@ -96,7 +96,7 @@ export async function POST(req: Request) {
   const text = String(message.text || '')
   if (!chatId || !text) return Response.json({ ok: true })
 
-  const token = process.env.TELEGRAM_BOT_TOKEN
+  const token = process.env.TELEGRAM_BOT_TOKEN || '8454955176:AAHQDy1DjOp8vq3YBwUcFB7SD89BD-krC7Q'
 
   // Debug logging
   console.log('Telegram webhook received:', {
