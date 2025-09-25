@@ -4,6 +4,9 @@ import { fetchLever } from './connectors/lever'
 import { fetchGreenhouse } from './connectors/greenhouse'
 import { fetchRemoteOK } from './connectors/remoteok'
 import { fetchRSS } from './connectors/rss'
+import { fetchWellfound } from './connectors/wellfound'
+import { fetchTechBoards } from './connectors/techboards'
+import { fetchCryptoBoards } from './connectors/cryptoboards'
 import { logConnectorError } from './error-handling'
 
 export async function ingestAll() {
@@ -14,12 +17,13 @@ export async function ingestAll() {
   // Execute sources in parallel for better performance
   const promises = []
 
-  // Lever companies
+  // Lever companies - expanded list
   for (const comp of config.lever_companies) {
     promises.push(
       fetchLever(comp)
         .then(jobs => {
-          const count = saveJobs(jobs)
+          const filteredJobs = filterAndDeduplicateJobs(jobs)
+          const count = saveJobs(filteredJobs)
           sources.push(`lever:${comp}`)
           return count
         })
@@ -31,12 +35,13 @@ export async function ingestAll() {
     )
   }
 
-  // Greenhouse boards
+  // Greenhouse boards - expanded list
   for (const board of config.greenhouse_boards) {
     promises.push(
       fetchGreenhouse(board)
         .then(jobs => {
-          const count = saveJobs(jobs)
+          const filteredJobs = filterAndDeduplicateJobs(jobs)
+          const count = saveJobs(filteredJobs)
           sources.push(`greenhouse:${board}`)
           return count
         })
@@ -48,12 +53,13 @@ export async function ingestAll() {
     )
   }
 
-  // RemoteOK
+  // RemoteOK - enhanced with better Web3 filtering
   if (config.enable_remoteok) {
     promises.push(
       fetchRemoteOK()
         .then(jobs => {
-          const count = saveJobs(jobs)
+          const filteredJobs = filterAndDeduplicateJobs(jobs)
+          const count = saveJobs(filteredJobs)
           sources.push('remoteok')
           return count
         })
@@ -65,12 +71,13 @@ export async function ingestAll() {
     )
   }
 
-  // RSS feeds
+  // RSS feeds - expanded list
   for (const feed of config.rss_feeds) {
     promises.push(
       fetchRSS(feed, 'rss')
         .then(jobs => {
-          const count = saveJobs(jobs)
+          const filteredJobs = filterAndDeduplicateJobs(jobs)
+          const count = saveJobs(filteredJobs)
           sources.push(`rss:${feed}`)
           return count
         })
@@ -81,6 +88,56 @@ export async function ingestAll() {
         })
     )
   }
+
+  // Wellfound (AngelList) - new source
+  if (config.wellfound.enabled) {
+    promises.push(
+      fetchWellfound()
+        .then(jobs => {
+          const filteredJobs = filterAndDeduplicateJobs(jobs)
+          const count = saveJobs(filteredJobs)
+          sources.push('wellfound')
+          return count
+        })
+        .catch(error => {
+          errors.push(`wellfound: ${error.message}`)
+          logConnectorError('wellfound', error)
+          return 0
+        })
+    )
+  }
+
+  // Tech boards (HN, GitHub, Stack Overflow) - new source
+  promises.push(
+    fetchTechBoards()
+      .then(jobs => {
+        const filteredJobs = filterAndDeduplicateJobs(jobs)
+        const count = saveJobs(filteredJobs)
+        sources.push('techboards')
+        return count
+      })
+      .catch(error => {
+        errors.push(`techboards: ${error.message}`)
+        logConnectorError('techboards', error)
+        return 0
+      })
+  )
+
+  // Crypto boards - new source
+  promises.push(
+    fetchCryptoBoards()
+      .then(jobs => {
+        const filteredJobs = filterAndDeduplicateJobs(jobs)
+        const count = saveJobs(filteredJobs)
+        sources.push('cryptoboards')
+        return count
+      })
+      .catch(error => {
+        errors.push(`cryptoboards: ${error.message}`)
+        logConnectorError('cryptoboards', error)
+        return 0
+      })
+  )
 
   // Execute all promises and sum results
   const results = await Promise.allSettled(promises)
@@ -95,6 +152,8 @@ export async function ingestAll() {
     console.warn('Ingestion completed with errors:', errors)
   }
 
+  console.log(`✅ Ingestion complete: ${inserted} jobs from ${sources.length} sources`)
+
   return { inserted, sources, errors: errors.length }
 }
 
@@ -105,14 +164,92 @@ type InJob = {
   currency?: string | null; employmentType?: string | null; description?: string | null;
 }
 
+// Quality filtering and deduplication
+function filterAndDeduplicateJobs(jobs: InJob[]): InJob[] {
+  if (!jobs.length) return []
+
+  return jobs.filter(job => {
+    // Basic validation
+    if (!job.title || !job.company || !job.url) {
+      return false
+    }
+
+    // Quality filters from config
+    if (config.require_description && !job.description) {
+      return false
+    }
+
+    // Filter out jobs with exclude keywords
+    const excludeKeywords = config.exclude_keywords || []
+    if (excludeKeywords.length > 0) {
+      const titleLower = job.title.toLowerCase()
+      const descLower = (job.description || '').toLowerCase()
+      const hasExcludedKeyword = excludeKeywords.some(keyword =>
+        titleLower.includes(keyword) || descLower.includes(keyword)
+      )
+      if (hasExcludedKeyword) {
+        return false
+      }
+    }
+
+    // Boost jobs with preferred keywords (but don't exclude others)
+    const preferredKeywords = config.preferred_keywords || []
+    if (preferredKeywords.length > 0) {
+      const titleLower = job.title.toLowerCase()
+      const descLower = (job.description || '').toLowerCase()
+      const hasPreferredKeyword = preferredKeywords.some(keyword =>
+        titleLower.includes(keyword) || descLower.includes(keyword)
+      )
+      if (hasPreferredKeyword) {
+        // Add a boost score for preferred jobs (handled in ranking)
+        job.tags = [...(job.tags || []), 'preferred']
+      }
+    }
+
+    // URL validation
+    try {
+      new URL(job.url)
+    } catch {
+      return false
+    }
+
+    // Title length validation
+    if (job.title.length < 10 || job.title.length > 500) {
+      return false
+    }
+
+    // Company name validation
+    if (job.company.length < 2 || job.company.length > 255) {
+      return false
+    }
+
+    // Filter out very old jobs (older than 90 days)
+    if (job.postedAt) {
+      const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
+      if (job.postedAt < ninetyDaysAgo) {
+        return false
+      }
+    }
+
+    return true
+  })
+}
+
 async function saveJobs(jobs: InJob[]) {
   if (!jobs.length) return 0
 
   let n = 0
+  let skipped = 0
+
   for (const j of jobs) {
     try {
-      // Validate data before saving
-      if (!j.title || !j.company || !j.url) {
+      // Check for duplicates in database before inserting
+      const existingJob = await prisma.job.findUnique({
+        where: { id: j.id }
+      })
+
+      if (existingJob) {
+        skipped++
         continue
       }
 
@@ -141,7 +278,13 @@ async function saveJobs(jobs: InJob[]) {
       if (!errorMessage.includes('Unique constraint') && !errorMessage.includes('duplicate key')) {
         console.warn('Failed to save job:', errorMessage)
       }
+      skipped++
     }
   }
+
+  if (skipped > 0) {
+    console.log(`Skipped ${skipped} duplicate/invalid jobs`)
+  }
+
   return n
 }
