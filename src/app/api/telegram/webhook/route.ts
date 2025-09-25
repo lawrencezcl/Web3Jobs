@@ -91,6 +91,24 @@ export async function POST(req: Request) {
   console.log(`📥 [${request_id}] Method: ${req.method}`)
   console.log(`📥 [${request_id}] Headers:`, Object.fromEntries(req.headers.entries()))
 
+  // Also log to our monitoring endpoint
+  try {
+    await fetch('https://web3-jobs-l15280ijg-lawrencezcls-projects.vercel.app/api/telegram-monitor', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        request_id,
+        timestamp: new Date().toISOString(),
+        url: req.url,
+        method: req.method,
+        user_agent: req.headers.get('user-agent'),
+        source: 'webhook'
+      })
+    })
+  } catch (monitorError) {
+    console.log(`⚠️ [${request_id}] Failed to log to monitor:`, monitorError)
+  }
+
   const { searchParams } = new URL(req.url)
   const secret = searchParams.get('secret') || ''
   const webhookSecret = process.env.TELEGRAM_WEBHOOK_SECRET || 'web3jobs-telegram-webhook-secret'
