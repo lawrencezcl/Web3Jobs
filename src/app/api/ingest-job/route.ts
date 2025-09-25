@@ -43,12 +43,12 @@ function validateAndSanitizeJob(job: any): Job | null {
       postedAt: job.postedAt || new Date().toISOString(),
       url: job.url || '#',
       applyUrl: job.applyUrl || job.url || '#',
-      tags: Array.isArray(job.tags) ? job.tags.filter(tag => typeof tag === 'string') : [],
+      tags: Array.isArray(job.tags) ? job.tags.filter((tag: any) => typeof tag === 'string') : [],
       description: job.description.trim().substring(0, 2000)
     }
 
     // Clean tags
-    sanitizedJob.tags = sanitizedJob.tags.map(tag =>
+    sanitizedJob.tags = sanitizedJob.tags.map((tag: string) =>
       tag.replace(/[^a-zA-Z0-9\-]/g, '').toLowerCase()
     ).filter(tag => tag.length > 0)
 
