@@ -11,19 +11,6 @@ export async function GET() {
     const before = new Date()
     console.log('Starting cron job ingestion...')
 
-    // Test database connection first
-    try {
-      await prisma.$queryRaw`SELECT 1`
-      console.log('Database connection OK')
-    } catch (dbError) {
-      console.error('Database connection failed:', dbError)
-      return Response.json({
-        ok: false,
-        error: 'Database connection failed',
-        dbError: dbError instanceof Error ? dbError.message : 'Unknown DB error'
-      }, { status: 500 })
-    }
-
     // Set a timeout for the entire ingestion process
     const timeoutPromise = new Promise((_, reject) => {
       setTimeout(() => reject(new Error('Cron job timeout after 4 minutes')), 240000)
@@ -34,14 +21,7 @@ export async function GET() {
     // Race between ingestion and timeout
     const { inserted, sources, errors } = await Promise.race([ingestionPromise, timeoutPromise]) as any
 
-    console.log(`Ingestion completed. Inserted ${inserted} jobs from sources:`, sources)
-    if (errors > 0) {
-      console.log(`Completed with ${errors} errors`)
-    }
-
-    // Test if jobs were actually saved
-    const totalJobs = await prisma.job.count()
-    console.log(`Total jobs in database: ${totalJobs}`)
+    console.log(`Ingestion completed. Inserted ${inserted} jobs from ${sources.length} sources with ${errors} errors`)
 
     // Only fetch newly created jobs if we actually inserted any
     let notifiedJobs = 0
@@ -62,7 +42,6 @@ export async function GET() {
       ok: true,
       inserted,
       notifiedJobs,
-      totalJobs,
       sources,
       errors,
       duration: Date.now() - before.getTime()
