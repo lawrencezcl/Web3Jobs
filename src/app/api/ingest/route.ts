@@ -2,6 +2,7 @@ import { ingestAll } from '../../../lib/ingest'
 import { prisma } from '../../../lib/db'
 import { notifySubscribers } from '../../../lib/notify'
 export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 export async function POST(req: Request) {
   const url = new URL(req.url)
