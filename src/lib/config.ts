@@ -1,6 +1,6 @@
 export const config = {
-  lever_companies: ['consensys','chainalysis','chainlink','ledger','ripple','circleinternetfinancial'],
-  greenhouse_boards: ['consensys','chainlink','ledger','ripple','circle'],
+  lever_companies: ['ledger'],
+  greenhouse_boards: ['consensys', 'ripple'],
   enable_remoteok: true,
   rss_feeds: [
     'https://crypto-careers.com/jobs.rss',

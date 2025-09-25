@@ -4,33 +4,98 @@ import { fetchLever } from './connectors/lever'
 import { fetchGreenhouse } from './connectors/greenhouse'
 import { fetchRemoteOK } from './connectors/remoteok'
 import { fetchRSS } from './connectors/rss'
+import { logConnectorError } from './error-handling'
 
 export async function ingestAll() {
   const sources: string[] = []
   let inserted = 0
+  const errors: string[] = []
 
+  // Execute sources in parallel for better performance
+  const promises = []
+
+  // Lever companies
   for (const comp of config.lever_companies) {
-    const jobs = await fetchLever(comp)
-    inserted += await saveJobs(jobs)
-    sources.push(`lever:${comp}`)
-  }
-  for (const board of config.greenhouse_boards) {
-    const jobs = await fetchGreenhouse(board)
-    inserted += await saveJobs(jobs)
-    sources.push(`greenhouse:${board}`)
-  }
-  if (config.enable_remoteok) {
-    const jobs = await fetchRemoteOK()
-    inserted += await saveJobs(jobs)
-    sources.push('remoteok')
-  }
-  for (const feed of config.rss_feeds) {
-    const jobs = await fetchRSS(feed, 'rss')
-    inserted += await saveJobs(jobs)
-    sources.push(`rss:${feed}`)
+    promises.push(
+      fetchLever(comp)
+        .then(jobs => {
+          const count = saveJobs(jobs)
+          sources.push(`lever:${comp}`)
+          return count
+        })
+        .catch(error => {
+          errors.push(`lever:${comp}: ${error.message}`)
+          logConnectorError('lever', error, { company: comp })
+          return 0
+        })
+    )
   }
 
-  return { inserted, sources }
+  // Greenhouse boards
+  for (const board of config.greenhouse_boards) {
+    promises.push(
+      fetchGreenhouse(board)
+        .then(jobs => {
+          const count = saveJobs(jobs)
+          sources.push(`greenhouse:${board}`)
+          return count
+        })
+        .catch(error => {
+          errors.push(`greenhouse:${board}: ${error.message}`)
+          logConnectorError('greenhouse', error, { board })
+          return 0
+        })
+    )
+  }
+
+  // RemoteOK
+  if (config.enable_remoteok) {
+    promises.push(
+      fetchRemoteOK()
+        .then(jobs => {
+          const count = saveJobs(jobs)
+          sources.push('remoteok')
+          return count
+        })
+        .catch(error => {
+          errors.push(`remoteok: ${error.message}`)
+          logConnectorError('remoteok', error)
+          return 0
+        })
+    )
+  }
+
+  // RSS feeds
+  for (const feed of config.rss_feeds) {
+    promises.push(
+      fetchRSS(feed, 'rss')
+        .then(jobs => {
+          const count = saveJobs(jobs)
+          sources.push(`rss:${feed}`)
+          return count
+        })
+        .catch(error => {
+          errors.push(`rss:${feed}: ${error.message}`)
+          logConnectorError('rss', error, { feed })
+          return 0
+        })
+    )
+  }
+
+  // Execute all promises and sum results
+  const results = await Promise.allSettled(promises)
+  results.forEach(result => {
+    if (result.status === 'fulfilled') {
+      inserted += result.value
+    }
+  })
+
+  // Log any errors
+  if (errors.length > 0) {
+    console.warn('Ingestion completed with errors:', errors)
+  }
+
+  return { inserted, sources, errors: errors.length }
 }
 
 type InJob = {
@@ -42,6 +107,7 @@ type InJob = {
 
 async function saveJobs(jobs: InJob[]) {
   if (!jobs.length) return 0
+
   let n = 0
   for (const j of jobs) {
     try {
@@ -62,9 +128,14 @@ async function saveJobs(jobs: InJob[]) {
           employmentType: j.employmentType || null,
           description: j.description || null
         }
-      }).catch(()=>null)
+      })
       n++
-    } catch {}
+    } catch (error) {
+      // Ignore duplicate entries and other errors
+      if (!error.message.includes('Unique constraint')) {
+        console.warn('Failed to save job:', error.message)
+      }
+    }
   }
   return n
 }
