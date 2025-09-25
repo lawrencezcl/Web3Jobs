@@ -23,7 +23,11 @@
     "docker:tools": "docker-compose --profile tools up -d",
     "db:push": "prisma db push",
     "db:seed": "node scripts/seed.js",
-    "db:reset": "prisma migrate reset --force"
+    "db:reset": "prisma migrate reset --force",
+    "test:telegram": "./test_telegram_posting.sh",
+    "test:api": "npm run test:telegram",
+    "docs:serve": "cd docs && npm run dev",
+    "docs:build": "cd docs && npm run build"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
