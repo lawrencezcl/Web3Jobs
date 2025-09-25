@@ -6,6 +6,47 @@ import { Button } from '../../../components/ui/button'
 import { Card } from '../../../components/ui/card'
 import Link from 'next/link'
 
+// Utility function to decode HTML entities
+function decodeHtmlEntities(text: string): string {
+  return text
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+}
+
+// Utility function to extract contact info from job descriptions
+function extractContactInfo(description: string): { emails: string[], links: string[] } {
+  const emails: string[] = []
+  const links: string[] = []
+
+  // Extract email addresses
+  const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g
+  const foundEmails = description.match(emailRegex)
+  if (foundEmails) {
+    emails.push(...foundEmails)
+  }
+
+  // Extract URLs that might be application links
+  const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g
+  const foundUrls = description.match(urlRegex)
+  if (foundUrls) {
+    // Filter out common non-application URLs
+    const filteredUrls = foundUrls.filter(url =>
+      !url.includes('coinbase.com/careers') &&
+      !url.includes('github.com') &&
+      !url.includes('linkedin.com') &&
+      !url.includes('twitter.com') &&
+      !url.includes('vercel.com')
+    )
+    links.push(...filteredUrls)
+  }
+
+  return { emails, links }
+}
+
 type Props = {
   params: { id: string }
 }
@@ -81,6 +122,17 @@ export default async function JobDetailPage({ params }: Props) {
 
   const tags = job.tags ? job.tags.split(',').filter(Boolean) : []
 
+  // Process job description
+  let processedDescription = job.description || ''
+  let contactInfo = { emails: [] as string[], links: [] as string[] }
+
+  if (processedDescription) {
+    // Decode HTML entities
+    processedDescription = decodeHtmlEntities(processedDescription)
+    // Extract contact information
+    contactInfo = extractContactInfo(processedDescription)
+  }
+
   return (
     <div className="max-w-4xl mx-auto p-4">
       <div className="mb-6">
@@ -143,14 +195,58 @@ export default async function JobDetailPage({ params }: Props) {
             </div>
           )}
 
+          {/* Contact Information */}
+          {(contactInfo.emails.length > 0 || contactInfo.links.length > 0) && (
+            <div>
+              <h3 className="text-lg font-semibold mb-3">Contact Information</h3>
+              <div className="space-y-3">
+                {contactInfo.emails.length > 0 && (
+                  <div>
+                    <span className="text-slate-400 text-sm">Email Addresses:</span>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {contactInfo.emails.map((email, index) => (
+                        <a
+                          key={index}
+                          href={`mailto:${email}`}
+                          className="text-blue-400 hover:text-blue-300 text-sm underline"
+                        >
+                          {email}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {contactInfo.links.length > 0 && (
+                  <div>
+                    <span className="text-slate-400 text-sm">Application Links:</span>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {contactInfo.links.map((link, index) => (
+                        <a
+                          key={index}
+                          href={link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-400 hover:text-blue-300 text-sm underline break-all"
+                        >
+                          {link.length > 50 ? link.substring(0, 50) + '...' : link}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Job Description */}
-          {job.description && (
+          {processedDescription && (
             <div>
               <h3 className="text-lg font-semibold mb-3">Job Description</h3>
               <div className="prose prose-invert max-w-none">
-                <p className="text-slate-300 leading-relaxed whitespace-pre-wrap">
-                  {job.description}
-                </p>
+                <div
+                  className="text-slate-300 leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: processedDescription }}
+                />
               </div>
             </div>
           )}

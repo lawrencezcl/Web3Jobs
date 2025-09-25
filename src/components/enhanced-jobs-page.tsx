@@ -30,6 +30,7 @@ export default function EnhancedJobsPage() {
   const [q, setQ] = useState('')
   const [tag, setTag] = useState('')
   const [remote, setRemote] = useState('true')
+  const [dateRange, setDateRange] = useState('')
   const [items, setItems] = useState<Job[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(false)
@@ -37,6 +38,7 @@ export default function EnhancedJobsPage() {
   const search = useCallback(async () => {
     setLoading(true)
     const params = new URLSearchParams({ q, tag, remote, limit: '50', page: '1' })
+    if (dateRange) params.append('dateRange', dateRange)
 
     try {
       const res = await fetch('/api/jobs?' + params.toString(), {
@@ -56,7 +58,7 @@ export default function EnhancedJobsPage() {
     } finally {
       setLoading(false)
     }
-  }, [q, tag, remote])
+  }, [q, tag, remote, dateRange])
 
   const debouncedSearch = useMemo(() => {
     let timeoutId: NodeJS.Timeout
@@ -185,6 +187,20 @@ export default function EnhancedJobsPage() {
           >
             <option value="true">Remote Only</option>
             <option value="false">Onsite/Hybrid</option>
+          </select>
+          <select
+            className="bg-slate-800 border border-slate-700 rounded-md px-3 py-2"
+            value={dateRange}
+            onChange={e => {
+              setDateRange(e.target.value)
+              debouncedSearch()
+            }}
+          >
+            <option value="">All Time</option>
+            <option value="today">Today</option>
+            <option value="week">Last 7 Days</option>
+            <option value="month">Last 30 Days</option>
+            <option value="3months">Last 3 Months</option>
           </select>
           <Button
             onClick={debouncedSearch}
