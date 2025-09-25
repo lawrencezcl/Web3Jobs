@@ -1,9 +1,9 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Input } from './ui/input'
+import { Button } from './ui/button'
+import { Card } from './ui/card'
+import { Badge } from './ui/badge'
 import Link from 'next/link'
 
 type Job = {

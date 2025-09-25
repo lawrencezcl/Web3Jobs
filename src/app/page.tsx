@@ -1,4 +1,4 @@
-import EnhancedJobsPage from '@/components/enhanced-jobs-page'
+import EnhancedJobsPage from '../components/enhanced-jobs-page'
 
 export const dynamic = 'force-dynamic'
 
