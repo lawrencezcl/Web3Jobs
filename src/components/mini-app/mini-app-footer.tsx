@@ -67,21 +67,6 @@ export function MiniAppFooter({ telegram }: MiniAppFooterProps) {
     }
   }
 
-  const handleRateApp = () => {
-    if (telegram) {
-      telegram.HapticFeedback.impactOccurred('light')
-
-      // Simulate rating - in real app, this would open a rating system
-      const ratingData = {
-        action: 'rate',
-        rating: 5,
-        timestamp: new Date().toISOString()
-      }
-
-      telegram.sendData(JSON.stringify(ratingData))
-    }
-  }
-
   const setupMainButton = () => {
     if (telegram) {
       // Configure main button for subscription
