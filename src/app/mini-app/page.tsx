@@ -213,8 +213,8 @@ export default function MiniAppPage() {
           webApp.expand()
 
           // Set header color to match theme
-          if (webApp.setHeaderColor) {
-            webApp.setHeaderColor(webApp.themeParams.bg_color || '#ffffff')
+          if (webApp.headerColor !== undefined) {
+            webApp.headerColor = webApp.themeParams.bg_color || '#ffffff'
           }
 
           // Setup Main Button for search functionality
