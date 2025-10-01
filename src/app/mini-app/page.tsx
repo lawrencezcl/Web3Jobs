@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { MiniAppHeader } from '@/components/mini-app/mini-app-header'
 import { JobSearch } from '@/components/mini-app/job-search'
