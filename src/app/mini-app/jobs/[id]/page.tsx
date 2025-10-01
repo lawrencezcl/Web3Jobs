@@ -125,6 +125,7 @@ interface TelegramWebApp {
   close: () => void
   ready: () => void
   expand: () => void
+  enableClosingConfirmation: () => void
   BackButton: {
     isVisible: boolean
     onClick: (callback: () => void) => void
