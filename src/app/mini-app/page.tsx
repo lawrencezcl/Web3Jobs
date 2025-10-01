@@ -211,7 +211,6 @@ export default function MiniAppPage() {
 
           // Enable expanded mode and web app features
           webApp.expand()
-          webApp.enableClosingConfirmation()
 
           // Set header color to match theme
           if (webApp.setHeaderColor) {
