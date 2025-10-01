@@ -153,6 +153,15 @@ interface TelegramWebApp {
   onEvent: (eventType: string, callback: () => void) => void
   offEvent: (eventType: string, callback: () => void) => void
   openInvoice: (url: string, callback: (status: string) => void) => void
+  initDataUnsafe: {
+    user?: {
+      id: number
+      first_name: string
+      last_name?: string
+      username?: string
+      language_code?: string
+    }
+  }
 }
 
 export default function JobDetailPage() {
