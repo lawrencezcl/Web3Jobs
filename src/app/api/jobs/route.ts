@@ -1,6 +1,7 @@
 import { prisma } from '../../../lib/db'
 export const runtime = 'nodejs'
-export const dynamic = 'force-dynamic'
+// Remove force-dynamic and add caching
+export const revalidate = 60 // Revalidate every 60 seconds
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
@@ -88,15 +89,36 @@ export async function GET(req: Request) {
     ]
   }
 
+  // Optimize database query with select fields to reduce data transfer
   const [items, total] = await Promise.all([
     prisma.job.findMany({
       where,
       orderBy: [{ postedAt: 'desc' }, { createdAt: 'desc' }],
       take: limit,
-      skip
+      skip,
+      select: {
+        id: true,
+        title: true,
+        company: true,
+        location: true,
+        remote: true,
+        tags: true,
+        url: true,
+        source: true,
+        postedAt: true,
+        createdAt: true,
+        salary: true,
+        seniorityLevel: true,
+        description: false, // Don't load description for list view
+        employmentType: true,
+        currency: true
+      }
     }),
     prisma.job.count({ where })
   ])
 
-  return Response.json({ total, page, limit, items })
+  // Set cache headers
+  const response = Response.json({ total, page, limit, items })
+  response.headers.set('Cache-Control', 'public, max-age=60, s-maxage=300')
+  return response
 }

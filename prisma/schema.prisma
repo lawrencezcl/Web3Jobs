@@ -29,10 +29,18 @@ model Job {
   seniorityLevel  String?  @db.VarChar(100)
   description     String?  @db.Text
 
+  // Optimized indexes for common queries
   @@index([createdAt, postedAt, source])
+  @@index([remote, postedAt]) // For remote job filtering with date sorting
   @@index([country, remote])
   @@index([salaryMin, salaryMax])
   @@index([seniorityLevel])
+  @@index([employmentType]) // New index for employment type filtering
+  @@index([company]) // For company-based searches
+  @@index([title]) // For title-based searches
+  @@index([tags]) // For tag-based searches
+  @@index([source, postedAt]) // For source-based filtering with date sorting
+  @@index([remote, country, postedAt]) // Composite index for location + remote filtering
 }
 
 model Subscriber {
