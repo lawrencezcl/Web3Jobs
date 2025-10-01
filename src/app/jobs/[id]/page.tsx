@@ -6,7 +6,7 @@ import { Button } from '../../../components/ui/button'
 import { Card } from '../../../components/ui/card'
 import Link from 'next/link'
 
-// Utility function to decode HTML entities
+// Utility function to decode HTML entities and format markdown
 function decodeHtmlEntities(text: string): string {
   return text
     .replace(/&lt;/g, '<')
@@ -15,6 +15,25 @@ function decodeHtmlEntities(text: string): string {
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
     .replace(/&nbsp;/g, ' ')
+}
+
+// Utility function to convert markdown-like text to HTML
+function convertMarkdownToHtml(text: string): string {
+  return text
+    // Convert markdown headers to HTML headers
+    .replace(/^### (.*$)/gm, '<h3 class="text-lg font-semibold mb-2 mt-4">$1</h3>')
+    .replace(/^## (.*$)/gm, '<h2 class="text-xl font-bold mb-3 mt-6">$1</h2>')
+    .replace(/^# (.*$)/gm, '<h1 class="text-2xl font-bold mb-4 mt-8">$1</h1>')
+    // Convert bullet points
+    .replace(/^• (.*$)/gm, '<li class="ml-4">$1</li>')
+    // Convert line breaks
+    .replace(/\n/g, '<br>')
+    // Wrap consecutive <li> elements in <ul>
+    .replace(/(<li[^>]*>.*?<\/li>)+/gs, '<ul class="list-disc space-y-1 mb-4">$&</ul>')
+    // Clean up extra breaks
+    .replace(/<br><br><br>/g, '<br><br>')
+    // Add spacing after headers
+    .replace(/(<\/h[123]>)<br>/g, '$1')
 }
 
 // Utility function to extract contact info from job descriptions
@@ -129,6 +148,8 @@ export default async function JobDetailPage({ params }: Props) {
   if (processedDescription) {
     // Decode HTML entities
     processedDescription = decodeHtmlEntities(processedDescription)
+    // Convert markdown-like formatting to HTML
+    processedDescription = convertMarkdownToHtml(processedDescription)
     // Extract contact information
     contactInfo = extractContactInfo(processedDescription)
   }
