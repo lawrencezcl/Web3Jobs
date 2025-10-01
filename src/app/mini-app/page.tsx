@@ -267,11 +267,7 @@ export default function MiniAppPage() {
           // Notify Telegram that the app is ready
           webApp.ready()
 
-          // Enable swipe behavior for better UX
-          if (webApp.enableSwipeToClose) {
-            webApp.enableSwipeToClose(true)
-          }
-
+          
           // Initial viewport setup
           document.body.style.minHeight = `${webApp.viewportHeight}px`
         }
