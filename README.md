@@ -142,6 +142,11 @@ https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/setWebhook?url=https://<your-ap
 - `/postjob {JSON}` - Admin: Post job to channel
 - `/ingest` - Admin: Test job ingestion
 
+**📖 Related Documentation:**
+- [🤖 Telegram Setup Guide](./telegram-troubleshooting-guide.md) - Complete bot configuration
+- [📱 Mini App Guide](./telegram-mini-app-guide.md) - Telegram Mini App setup
+- [📢 Channel Posting](./TELEGRAM_CHANNEL_POSTING.md) - Automated channel posting
+
 **Channel Features:**
 - Automatic Web3 job posting every 3 hours
 - Smart filtering for blockchain/crypto relevance
@@ -235,3 +240,11 @@ curl -X POST https://<app>/api/subscriptions -H 'content-type: application/json'
 - **Testing**: Jest and React Testing Library setup provided
 
 To switch to official shadcn/ui components: `npx shadcn@latest init` then add `button input card badge` and replace the primitives in `src/components/ui`.
+
+**📚 Additional Resources:**
+- [🚀 Production Deployment](./PRODUCTION_DEPLOYMENT_GUIDE.md) - Step-by-step deployment guide
+- [📋 Deployment Checklist](./DEPLOYMENT_CHECKLIST.md) - Pre-launch verification
+- [🔧 Docker Setup](./DEPLOYMENT.md) - Docker deployment instructions
+- [📊 UI Testing Report](./UI-UX-Testing-Report.md) - Quality assurance results
+- [📈 Analytics Setup](./VERCEL_ANALYTICS_TROUBLESHOOTING.md) - Performance monitoring
+- [🧪 Mock Testing](./MOCK_TEST_GUIDE.md) - Development testing guide

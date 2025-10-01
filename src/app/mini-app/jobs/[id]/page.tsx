@@ -165,23 +165,74 @@ export default function JobDetailPage() {
   const jobId = params.id as string
 
   useEffect(() => {
-    // Initialize Telegram Web App
+    // Initialize Telegram Web App with enhanced features
     try {
       if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
         const webApp = window.Telegram.WebApp
         setTelegram(webApp)
         webApp.ready()
         webApp.expand()
+
+        // Enable closing confirmation
+        webApp.enableClosingConfirmation()
+
+        // Setup Main Button for apply action
+        webApp.MainButton.setText('Apply Now')
+        webApp.MainButton.setParams({
+          color: webApp.themeParams.button_color || '#22c55e',
+          text_color: webApp.themeParams.button_text_color || '#ffffff'
+        })
+        webApp.MainButton.onClick(() => {
+          webApp.HapticFeedback.impactOccurred('medium')
+          const jobUrl = job?.applyUrl || job?.url
+          if (jobUrl) {
+            webApp.openLink(jobUrl)
+          }
+        })
+        webApp.MainButton.show()
+        webApp.MainButton.enable()
+
+        // Setup Back Button
+        webApp.BackButton.onClick(() => {
+          webApp.HapticFeedback.impactOccurred('light')
+          router.back()
+        })
+        webApp.BackButton.show()
+
+        // Cleanup on unmount
+        return () => {
+          webApp.MainButton.hide()
+          webApp.BackButton.hide()
+        }
       }
     } catch (error) {
       console.error('Error initializing Telegram Web App:', error)
     }
 
-    // Find job by ID
-    const foundJob = sampleJobs.find(j => j.id === jobId)
-    setJob(foundJob || null)
-    setLoading(false)
-  }, [jobId])
+    // Find job by ID (try real API first)
+    const fetchJobDetails = async () => {
+      try {
+        const response = await fetch(`/api/jobs/${jobId}`)
+        if (response.ok) {
+          const jobData = await response.json()
+          setJob(jobData)
+        } else {
+          // Fallback to sample data
+          const foundJob = sampleJobs.find(j => j.id === jobId)
+          setJob(foundJob || null)
+        }
+      } catch (error) {
+        console.error('Error fetching job details:', error)
+        // Fallback to sample data
+        const foundJob = sampleJobs.find(j => j.id === jobId)
+        setJob(foundJob || null)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchJobDetails()
+  }, [jobId, router, job?.applyUrl, job?.url])
 
   const handleApply = () => {
     if (telegram) {

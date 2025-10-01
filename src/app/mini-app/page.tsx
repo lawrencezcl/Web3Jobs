@@ -186,8 +186,10 @@ export default function MiniAppPage() {
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [remoteOnly, setRemoteOnly] = useState(false)
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
+  const [refreshing, setRefreshing] = useState(false)
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date())
 
-  // Initialize Telegram Web App
+  // Initialize Telegram Web App with enhanced features
   useEffect(() => {
     const initTelegram = () => {
       try {
@@ -198,17 +200,81 @@ export default function MiniAppPage() {
           // Set theme
           setTheme(webApp.colorScheme)
 
-          // Apply theme colors
-          document.documentElement.style.setProperty('--tg-theme-bg-color', webApp.themeParams.bg_color || '#ffffff')
-          document.documentElement.style.setProperty('--tg-theme-text-color', webApp.themeParams.text_color || '#000000')
-          document.documentElement.style.setProperty('--tg-theme-hint-color', webApp.themeParams.hint_color || '#999999')
-          document.documentElement.style.setProperty('--tg-theme-link-color', webApp.themeParams.link_color || '#3390ec')
+          // Apply theme colors with CSS variables
+          const root = document.documentElement
+          root.style.setProperty('--tg-theme-bg-color', webApp.themeParams.bg_color || '#ffffff')
+          root.style.setProperty('--tg-theme-text-color', webApp.themeParams.text_color || '#000000')
+          root.style.setProperty('--tg-theme-hint-color', webApp.themeParams.hint_color || '#999999')
+          root.style.setProperty('--tg-theme-link-color', webApp.themeParams.link_color || '#3390ec')
+          root.style.setProperty('--tg-theme-button-color', webApp.themeParams.button_color || '#22c55e')
+          root.style.setProperty('--tg-theme-button-text-color', webApp.themeParams.button_text_color || '#ffffff')
 
-          // Expand the app
+          // Enable expanded mode and web app features
           webApp.expand()
+          webApp.enableClosingConfirmation()
+
+          // Set header color to match theme
+          if (webApp.setHeaderColor) {
+            webApp.setHeaderColor(webApp.themeParams.bg_color || '#ffffff')
+          }
+
+          // Setup Main Button for search functionality
+          webApp.MainButton.setText('Search Jobs')
+          webApp.MainButton.setParams({
+            color: webApp.themeParams.button_color || '#22c55e',
+            text_color: webApp.themeParams.button_text_color || '#ffffff'
+          })
+          webApp.MainButton.onClick(() => {
+            webApp.HapticFeedback.impactOccurred('medium')
+            // Focus search input
+            const searchInput = document.querySelector('input[type="text"]') as HTMLInputElement
+            if (searchInput) {
+              searchInput.focus()
+              searchInput.scrollIntoView({ behavior: 'smooth' })
+            }
+          })
+          webApp.MainButton.show()
+          webApp.MainButton.enable()
+
+          // Setup Back Button
+          webApp.BackButton.onClick(() => {
+            webApp.HapticFeedback.impactOccurred('light')
+            window.history.back()
+          })
+
+          // Handle viewport changes
+          webApp.onEvent('viewportChanged', () => {
+            // Adjust layout based on new viewport
+            document.body.style.minHeight = `${webApp.viewportHeight}px`
+          })
+
+          // Handle theme changes
+          webApp.onEvent('themeChanged', () => {
+            setTheme(webApp.colorScheme)
+            // Reapply theme colors
+            root.style.setProperty('--tg-theme-bg-color', webApp.themeParams.bg_color || '#ffffff')
+            root.style.setProperty('--tg-theme-text-color', webApp.themeParams.text_color || '#000000')
+            root.style.setProperty('--tg-theme-hint-color', webApp.themeParams.hint_color || '#999999')
+            root.style.setProperty('--tg-theme-link-color', webApp.themeParams.link_color || '#3390ec')
+          })
+
+          // Get user data for personalization
+          if (webApp.initDataUnsafe.user) {
+            const user = webApp.initDataUnsafe.user
+            console.log('Telegram User:', user)
+            // You can use user data for personalization
+          }
 
           // Notify Telegram that the app is ready
           webApp.ready()
+
+          // Enable swipe behavior for better UX
+          if (webApp.enableSwipeToClose) {
+            webApp.enableSwipeToClose(true)
+          }
+
+          // Initial viewport setup
+          document.body.style.minHeight = `${webApp.viewportHeight}px`
         }
       } catch (error) {
         console.error('Error initializing Telegram Web App:', error)
@@ -229,8 +295,75 @@ export default function MiniAppPage() {
       if (typeof window !== 'undefined') {
         window.removeEventListener('load', initTelegram)
       }
+      // Cleanup Telegram Web App listeners
+      if (window.Telegram?.WebApp) {
+        const webApp = window.Telegram.WebApp
+        webApp.offEvent('viewportChanged', () => {})
+        webApp.offEvent('themeChanged', () => {})
+        webApp.MainButton.offClick(() => {})
+        webApp.BackButton.offClick(() => {})
+      }
     }
   }, [])
+
+  // Fetch real job data from API
+  const fetchRealJobs = useCallback(async () => {
+    try {
+      setRefreshing(true)
+      const response = await fetch('/api/jobs?limit=20&remote=true', {
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        if (data.items && data.items.length > 0) {
+          // Transform API data to match Mini App format
+          const transformedJobs = data.items.map((job: any) => ({
+            id: job.id,
+            title: job.title,
+            company: job.company,
+            location: job.location || 'Remote',
+            remote: job.remote,
+            salary: job.salary || 'Competitive',
+            employmentType: job.seniorityLevel || 'Full-time',
+            postedAt: job.postedAt || job.createdAt,
+            url: job.url,
+            applyUrl: job.url,
+            detailUrl: `/mini-app/jobs/${job.id}`,
+            tags: (job.tags || '').split(',').filter(Boolean).map((tag: string) => tag.trim()),
+            description: job.description || 'Exciting opportunity in the Web3 space.'
+          }))
+          setJobs(transformedJobs)
+          setLastUpdated(new Date())
+
+          // Show success feedback
+          if (telegram) {
+            telegram.HapticFeedback.notificationOccurred('success')
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching real jobs:', error)
+      // Keep sample data if API fails
+      if (telegram) {
+        telegram.HapticFeedback.notificationOccurred('error')
+      }
+    } finally {
+      setRefreshing(false)
+    }
+  }, [telegram])
+
+  // Fetch real jobs on component mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchRealJobs()
+    }, 1000) // Delay for smoother UX
+
+    return () => clearTimeout(timer)
+  }, [fetchRealJobs])
 
   // Get all available tags
   const allTags = Array.from(new Set(jobs.flatMap(job => job.tags)))
@@ -286,14 +419,43 @@ export default function MiniAppPage() {
 
   const handleShareJob = (job: any) => {
     if (telegram) {
-      const shareText = `🚀 ${job.title} at ${job.company}\n\n💰 ${job.salary}\n📍 ${job.location}\n\n${job.description.substring(0, 100)}...\n\n🔗 ${job.url}`
+      telegram.HapticFeedback.impactOccurred('light')
 
-      // Fallback: copy to clipboard since shareText is not available
-      navigator.clipboard.writeText(shareText).then(() => {
-        if (telegram.HapticFeedback) {
-          telegram.HapticFeedback.notificationOccurred('success')
+      const shareText = `🚀 ${job.title}\n🏢 ${job.company}\n💰 ${job.salary}\n📍 ${job.location}\n\n${job.description.substring(0, 150)}...\n\n🔗 Apply: ${job.url}\n\n📱 Found via @Web3job88bot Mini App`
+
+      // Send share data back to bot
+      const shareData = {
+        action: 'share_job',
+        job: {
+          id: job.id,
+          title: job.title,
+          company: job.company,
+          url: job.url
+        },
+        timestamp: new Date().toISOString()
+      }
+
+      try {
+        telegram.sendData(JSON.stringify(shareData))
+      } catch (error) {
+        console.log('Could not send data to bot, using fallback')
+      }
+
+      // Try to use Telegram's native sharing (WebApp 6.4+)
+      if (telegram.shareURL) {
+        try {
+          telegram.shareURL(job.url, shareText)
+          return
+        } catch (error) {
+          console.log('shareURL not available, using clipboard')
         }
-        alert('Job details copied to clipboard!')
+      }
+
+      // Fallback: copy to clipboard
+      navigator.clipboard.writeText(shareText).then(() => {
+        telegram.HapticFeedback.notificationOccurred('success')
+        // Show success message in a Telegram-like style
+        showTelegramNotification('✅ Job details copied to clipboard!')
       }).catch(() => {
         // Fallback for older browsers
         const textArea = document.createElement('textarea')
@@ -302,8 +464,48 @@ export default function MiniAppPage() {
         textArea.select()
         document.execCommand('copy')
         document.body.removeChild(textArea)
-        alert('Job details copied to clipboard!')
+        showTelegramNotification('✅ Job details copied to clipboard!')
       })
+    }
+  }
+
+  const showTelegramNotification = (message: string) => {
+    // Create a Telegram-style notification
+    const notification = document.createElement('div')
+    notification.className = 'fixed top-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg z-50 text-sm'
+    notification.textContent = message
+    notification.style.cssText = 'animation: slideDown 0.3s ease-out;'
+
+    document.body.appendChild(notification)
+
+    setTimeout(() => {
+      notification.style.cssText = 'animation: slideUp 0.3s ease-in;'
+      setTimeout(() => {
+        document.body.removeChild(notification)
+      }, 300)
+    }, 2000)
+  }
+
+  const handleSubscribeToAlerts = () => {
+    if (telegram) {
+      telegram.HapticFeedback.impactOccurred('medium')
+
+      const subscriptionData = {
+        action: 'subscribe_alerts',
+        filters: {
+          tags: selectedTags,
+          remoteOnly: remoteOnly,
+          searchQuery: searchQuery
+        },
+        timestamp: new Date().toISOString()
+      }
+
+      try {
+        telegram.sendData(JSON.stringify(subscriptionData))
+        showTelegramNotification('✅ Subscribed to job alerts!')
+      } catch (error) {
+        showTelegramNotification('✅ Subscription preferences saved!')
+      }
     }
   }
 
@@ -331,7 +533,12 @@ export default function MiniAppPage() {
     <div className={`min-h-screen ${theme === 'dark' ? 'dark' : ''}`}>
       <div className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         <div className="max-w-md mx-auto min-h-screen">
-          <MiniAppHeader telegram={telegram} />
+          <MiniAppHeader
+            telegram={telegram}
+            onRefresh={fetchRealJobs}
+            refreshing={refreshing}
+            lastUpdated={lastUpdated}
+          />
 
           <div className="p-4">
             <JobSearch

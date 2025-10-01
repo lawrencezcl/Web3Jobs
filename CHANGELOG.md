@@ -139,7 +139,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+Please read the project documentation in the main repository for our code of conduct and the process for submitting pull requests.
 
 ## Security
 
@@ -147,4 +147,4 @@ If you discover any security-related issues, please email security@your-domain.c
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the project repository for details.

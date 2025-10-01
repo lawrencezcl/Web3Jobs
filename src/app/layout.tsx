@@ -72,6 +72,10 @@ export const metadata: Metadata = {
     yandex: 'your-yandex-verification-code',
     yahoo: 'your-yahoo-verification-code',
   },
+  other: {
+    'msvalidate.01': 'your-bing-verification-code',
+    'p:domain_verify': 'your-pinterest-verification-code',
+  },
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {

@@ -238,11 +238,13 @@ export default function ModernHomepage({ initialData }: ModernHomepageProps) {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {POPULAR_COMPANIES.map((company) => (
               <Card key={company.name} className="p-4 text-center hover:bg-slate-800/50 transition-all duration-300 cursor-pointer group">
-                <div className="text-2xl mb-2 group-hover:scale-110 transition-transform duration-300">
-                  {company.logo}
-                </div>
-                <div className="font-medium text-sm">{company.name}</div>
-                <div className="text-xs text-slate-400">{company.jobs} jobs</div>
+                <Link href={`/jobs?q=${encodeURIComponent(company.name)}`} className="block">
+                  <div className="text-2xl mb-2 group-hover:scale-110 transition-transform duration-300">
+                    {company.logo}
+                  </div>
+                  <div className="font-medium text-sm">{company.name}</div>
+                  <div className="text-xs text-slate-400">{company.jobs} jobs</div>
+                </Link>
               </Card>
             ))}
           </div>
@@ -258,10 +260,12 @@ export default function ModernHomepage({ initialData }: ModernHomepageProps) {
                 <h2 className="text-3xl font-bold mb-2">Featured Opportunities</h2>
                 <p className="text-slate-400">Handpicked roles from top Web3 companies</p>
               </div>
-              <Button variant="outline" className="border-slate-600 hover:bg-slate-800">
-                View All
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
+              <Link href="/jobs">
+                <Button variant="outline" className="border-slate-600 hover:bg-slate-800">
+                  View All Jobs
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
             </div>
             
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -555,36 +559,36 @@ export default function ModernHomepage({ initialData }: ModernHomepageProps) {
                 The leading platform for Web3, blockchain, and cryptocurrency career opportunities.
               </p>
               <div className="flex space-x-4">
-                <a href="#" className="text-slate-400 hover:text-white transition-colors">Twitter</a>
-                <a href="#" className="text-slate-400 hover:text-white transition-colors">LinkedIn</a>
-                <a href="#" className="text-slate-400 hover:text-white transition-colors">Discord</a>
+                <a href="https://twitter.com/web3jobsplatform" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">Twitter</a>
+                <a href="https://linkedin.com/company/web3jobsplatform" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">LinkedIn</a>
+                <a href="https://discord.gg/web3jobs" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white transition-colors">Discord</a>
               </div>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Job Categories</h4>
               <ul className="space-y-2 text-slate-400">
-                <li><a href="#" className="hover:text-white transition-colors">Smart Contract Developer</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">DeFi Engineer</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Blockchain Analyst</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Web3 Frontend</a></li>
+                <li><Link href="/jobs?q=smart+contract" className="hover:text-white transition-colors">Smart Contract Developer</Link></li>
+                <li><Link href="/jobs?q=defi" className="hover:text-white transition-colors">DeFi Engineer</Link></li>
+                <li><Link href="/jobs?q=blockchain+analyst" className="hover:text-white transition-colors">Blockchain Analyst</Link></li>
+                <li><Link href="/jobs?q=web3+frontend" className="hover:text-white transition-colors">Web3 Frontend</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Companies</h4>
               <ul className="space-y-2 text-slate-400">
-                <li><a href="#" className="hover:text-white transition-colors">DeFi Protocols</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">NFT Platforms</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Layer 1 Blockchains</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Infrastructure</a></li>
+                <li><Link href="/jobs?q=defi+protocol" className="hover:text-white transition-colors">DeFi Protocols</Link></li>
+                <li><Link href="/jobs?q=nft" className="hover:text-white transition-colors">NFT Platforms</Link></li>
+                <li><Link href="/jobs?q=layer+1" className="hover:text-white transition-colors">Layer 1 Blockchains</Link></li>
+                <li><Link href="/jobs?q=blockchain+infrastructure" className="hover:text-white transition-colors">Infrastructure</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Resources</h4>
               <ul className="space-y-2 text-slate-400">
-                <li><a href="#" className="hover:text-white transition-colors">Career Guide</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Salary Reports</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Interview Tips</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Learning Path</a></li>
+                <li><a href="https://github.com/your-repo/web3-jobs-career-guide" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Career Guide</a></li>
+                <li><a href="https://www.richidea.top/salary-reports" className="hover:text-white transition-colors">Salary Reports</a></li>
+                <li><a href="https://www.richidea.top/interview-tips" className="hover:text-white transition-colors">Interview Tips</a></li>
+                <li><a href="https://github.com/your-repo/web3-learning-path" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Learning Path</a></li>
               </ul>
             </div>
           </div>

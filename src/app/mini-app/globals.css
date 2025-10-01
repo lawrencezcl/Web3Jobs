@@ -1,0 +1,180 @@
+/* Telegram Mini App Animations */
+
+@keyframes slideDown {
+  from {
+    transform: translate(-50%, -100%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+  to {
+    transform: translate(-50%, -100%);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+/* Telegram-style loading animation */
+.telegram-loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Shimmer effect for loading states */
+.shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Custom scrollbar for Telegram theme */
+.telegram-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.telegram-scrollbar::-webkit-scrollbar-track {
+  background: var(--tg-theme-bg-color);
+}
+
+.telegram-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--tg-theme-hint-color);
+  border-radius: 2px;
+}
+
+.telegram-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--tg-theme-link-color);
+}
+
+/* Telegram-like button styles */
+.telegram-button {
+  background: var(--tg-theme-button-color);
+  color: var(--tg-theme-button-text-color);
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.telegram-button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.telegram-button:active {
+  transform: translateY(0);
+}
+
+.telegram-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Telegram-style card hover effects */
+.telegram-card {
+  transition: all 0.2s ease;
+  border: 1px solid var(--tg-theme-hint-color);
+}
+
+.telegram-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Focus states for accessibility */
+.telegram-focus:focus {
+  outline: 2px solid var(--tg-theme-link-color);
+  outline-offset: 2px;
+}
+
+/* Smooth transitions for theme changes */
+.telegram-theme-transition {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Notification styles */
+.telegram-notification {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Loading skeleton */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+/* Pulse animation for live indicators */
+.live-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .telegram-notification {
+    width: calc(100% - 40px);
+    max-width: 320px;
+    font-size: 13px;
+  }
+}
