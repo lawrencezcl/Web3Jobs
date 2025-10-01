@@ -125,7 +125,6 @@ interface TelegramWebApp {
   close: () => void
   ready: () => void
   expand: () => void
-  enableClosingConfirmation?: () => void
   BackButton: {
     isVisible: boolean
     onClick: (callback: () => void) => void
@@ -173,11 +172,6 @@ export default function JobDetailPage() {
         setTelegram(webApp)
         webApp.ready()
         webApp.expand()
-
-        // Enable closing confirmation
-        if (webApp.enableClosingConfirmation) {
-          webApp.enableClosingConfirmation()
-        }
 
         // Setup Main Button for apply action
         webApp.MainButton.setText('Apply Now')
