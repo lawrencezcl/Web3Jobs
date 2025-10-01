@@ -295,8 +295,6 @@ export default function MiniAppPage() {
         const webApp = window.Telegram.WebApp
         webApp.offEvent('viewportChanged', () => {})
         webApp.offEvent('themeChanged', () => {})
-        webApp.MainButton.offClick(() => {})
-        webApp.BackButton.offClick(() => {})
       }
     }
   }, [])
