@@ -1,6 +1,8 @@
 # 🚀 Web3 Remote Jobs Platform - 部署指南
 
 > **全面的生产部署文档，支持Docker一键部署和传统部署方式**
+>
+> **生产环境：** https://www.remotejobs.top
 
 ## 📋 目录
 
@@ -73,7 +75,7 @@ MYSQL_PASSWORD=your-strong-user-password
 CRON_SECRET=your-super-secret-cron-key
 
 # 生产环境URL
-NEXT_PUBLIC_APP_URL=https://yourdomain.com
+NEXT_PUBLIC_APP_URL=https://www.remotejobs.top
 ```
 
 #### 3. 一键部署
@@ -151,7 +153,7 @@ services:
   web3-jobs-app:
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_APP_URL=https://yourdomain.com
+      - NEXT_PUBLIC_APP_URL=https://www.remotejobs.top
     deploy:
       replicas: 2
       resources:
@@ -583,7 +585,7 @@ logging:
 恭喜！你的 Web3 Remote Jobs Platform 现在已经成功部署并运行了！
 
 **访问地址：**
-- 🌐 主应用：http://localhost:3000 (本地) 或 https://yourdomain.com
+- 🌐 主应用：http://localhost:3000 (本地) 或 https://www.remotejobs.top
 - 🗄️ phpMyAdmin：http://localhost:8080 (Docker with tools profile)
 - 📊 健康检查：/api/health
 

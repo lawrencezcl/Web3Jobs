@@ -2,6 +2,8 @@
 
 A production-ready platform to automatically **collect Web3 remote jobs**, store in **Neon/Postgres**, expose a **Next.js** UI/API, run **Vercel Cron** ingestion, **push alerts** to **Telegram** & **Discord**, and **auto-post jobs to Telegram channels**.
 
+**Live Site:** https://www.remotejobs.top
+
 ## 🚀 Latest Features
 
 ### 📱 Telegram Mini App
@@ -124,6 +126,7 @@ Open http://localhost:3000
 - `vercel.json` adds a cron to GET `/api/cron` every 3 hours.
 - Manual ingestion: `POST /api/ingest?token=$CRAWL_TOKEN`
 - The cron job now automatically posts Web3 jobs to Telegram channels
+- Ensure environment variables are set for the production domain: `https://www.remotejobs.top`
 
 ### 4) Telegram Webhook & Channel Posting
 Set webhook to your deployed URL:
@@ -241,6 +244,54 @@ curl -X POST https://<app>/api/subscriptions -H 'content-type: application/json'
 
 To switch to official shadcn/ui components: `npx shadcn@latest init` then add `button input card badge` and replace the primitives in `src/components/ui`.
 
+## 🌟 Platform Highlights
+
+### ✅ Current Features
+- **Modern UI/UX**: Professional gradient design with responsive layout
+- **Real-time Search**: Advanced filtering by tags, location, salary, and date range
+- **Job Aggregation**: 30+ data sources including major crypto companies
+- **Telegram Integration**: Bot commands and automated channel posting
+- **Admin Panel**: Web interface for manual job posting and testing
+- **Mobile Optimized**: Telegram Mini App for on-the-go job browsing
+- **Performance**: Edge Runtime optimization and strategic caching
+
+### 🚀 Coming Soon
+- **Job Alerts**: Email notifications for personalized job matches
+- **Company Profiles**: Detailed company information and reviews
+- **Salary Insights**: Comprehensive salary analysis and benchmarks
+- **Application Tracking**: User accounts and application management
+- **PWA Support**: Offline capabilities and mobile app experience
+
+## 🎯 Platform Architecture
+
+```
+Frontend (Next.js 14)
+├── Modern Homepage with hero section
+├── Advanced job search and filtering
+├── Job detail pages with apply functionality
+├── Admin interface for job management
+└── Telegram Mini App integration
+
+Backend (API Routes)
+├── Job aggregation from 30+ sources
+├── Real-time search and filtering
+├── Telegram bot and channel posting
+├── Discord webhook integration
+└── Admin endpoints for manual posting
+
+Data Layer
+├── Neon PostgreSQL with Prisma ORM
+├── Automated deduplication and validation
+├── Indexed queries for performance
+└── Scheduled backups and monitoring
+
+Infrastructure
+├── Vercel hosting with Edge Runtime
+├── Vercel Cron for scheduled tasks
+├── Analytics and error tracking
+└── CI/CD with automated testing
+```
+
 **📚 Additional Resources:**
 - [🚀 Production Deployment](./PRODUCTION_DEPLOYMENT_GUIDE.md) - Step-by-step deployment guide
 - [📋 Deployment Checklist](./DEPLOYMENT_CHECKLIST.md) - Pre-launch verification
@@ -248,3 +299,10 @@ To switch to official shadcn/ui components: `npx shadcn@latest init` then add `b
 - [📊 UI Testing Report](./UI-UX-Testing-Report.md) - Quality assurance results
 - [📈 Analytics Setup](./VERCEL_ANALYTICS_TROUBLESHOOTING.md) - Performance monitoring
 - [🧪 Mock Testing](./MOCK_TEST_GUIDE.md) - Development testing guide
+
+## 📞 Support & Community
+
+- **Live Site:** https://www.remotejobs.top
+- **Telegram Channel:** @web3jobs88
+- **Issues & Feature Requests:** Use GitHub Issues
+- **Community Discord:** [Join our Discord](https://discord.gg/web3jobs)

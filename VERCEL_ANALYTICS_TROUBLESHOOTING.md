@@ -42,7 +42,7 @@ npx vercel --prod --yes
    - Analytics 启用后需要几分钟时间生效
 
 2. **访问你的网站**
-   - 打开：https://www.richidea.top/
+   - 打开：https://www.remotejobs.top/
    - 浏览几个不同的页面
    - 在页面之间导航
 

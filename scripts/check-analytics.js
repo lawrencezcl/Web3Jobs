@@ -46,7 +46,7 @@ function checkAnalyticsScript(htmlContent) {
 
 // 主检查函数
 async function checkAnalytics() {
-  const websiteUrl = 'https://www.richidea.top/';
+  const websiteUrl = 'https://www.remotejobs.top/';
   
   console.log('🔍 检查 Vercel Analytics 配置...\n');
   

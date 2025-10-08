@@ -69,7 +69,7 @@
 - 内容：包含完整的职位信息，职责说明，要求列表，福利介绍
 
 ### 示例对比
-**URL**：https://www.richidea.top/jobs/0129a252ce234ba09c3a49917eff4a0c146e6d45d3dbccbb8fe709aa4a0ca010
+**URL**：https://www.remotejobs.top/jobs/0129a252ce234ba09c3a49917eff4a0c146e6d45d3dbccbb8fe709aa4a0ca010
 
 **修复前**：
 > "MakerDAO is seeking a defi research analyst to help build the future of decentralized finance."
@@ -115,4 +115,4 @@ We are seeking a talented defi research analyst...
 
 ---
 
-**总结**：该问题已完全解决，用户现在可以在 https://www.richidea.top/ 上看到所有工作的详细描述信息。✨
+**总结**：该问题已完全解决，用户现在可以在 https://www.remotejobs.top/ 上看到所有工作的详细描述信息。✨

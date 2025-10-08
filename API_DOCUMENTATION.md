@@ -22,7 +22,8 @@ POST /api/ingest?token=your-token
 ## 📊 Base URL
 
 ```
-https://your-app.vercel.app
+Production: https://www.remotejobs.top
+Development: http://localhost:3000
 ```
 
 ## 🏢 Job Management APIs
@@ -41,7 +42,7 @@ List and search jobs with advanced filtering.
 
 **Example:**
 ```bash
-curl "https://your-app.vercel.app/api/jobs?q=blockchain&tag=solidity&remote=true&page=1&limit=10"
+curl "https://www.remotejobs.top/api/jobs?q=blockchain&tag=solidity&remote=true&page=1&limit=10"
 ```
 
 **Response:**
@@ -180,7 +181,7 @@ Telegram bot webhook for handling commands and interactions.
 
 **Webhook Setup:**
 ```bash
-https://api.telegram.org/bot<YOUR_BOT_TOKEN>/setWebhook?url=https://your-app.vercel.app/api/telegram/webhook?secret=<YOUR_SECRET>
+https://api.telegram.org/bot<YOUR_BOT_TOKEN>/setWebhook?url=https://www.remotejobs.top/api/telegram/webhook?secret=<YOUR_SECRET>
 ```
 
 ### GET /api/telegram/debug
@@ -191,7 +192,7 @@ Debug Telegram webhook configuration and connectivity.
 ```json
 {
   "webhook": {
-    "url": "https://your-app.vercel.app/api/telegram/webhook?secret=your-secret",
+    "url": "https://www.remotejobs.top/api/telegram/webhook?secret=your-secret",
     "hasCustomCertificate": false,
     "pendingUpdateCount": 0,
     "lastErrorDate": null,
@@ -430,7 +431,7 @@ The webhook handles these events:
 ### Test Job Ingestion
 ```bash
 # Test with a Web3 job
-curl -X POST https://your-app.vercel.app/api/ingest-job \
+curl -X POST https://www.remotejobs.top/api/ingest-job \
   -H "X-API-Key: your-token" \
   -d '{
     "title": "Blockchain Developer",
@@ -440,7 +441,7 @@ curl -X POST https://your-app.vercel.app/api/ingest-job \
   }'
 
 # Test with non-Web3 job (should be filtered)
-curl -X POST https://your-app.vercel.app/api/ingest-job \
+curl -X POST https://www.remotejobs.top/api/ingest-job \
   -H "X-API-Key: your-token" \
   -d '{
     "title": "Marketing Manager",
@@ -452,7 +453,7 @@ curl -X POST https://your-app.vercel.app/api/ingest-job \
 
 ### Test Direct Posting
 ```bash
-curl -X POST https://your-app.vercel.app/api/post-job-to-channel \
+curl -X POST https://www.remotejobs.top/api/post-job-to-channel \
   -H "Authorization: Bearer your-token" \
   -d '{
     "id": "test_123",
@@ -488,6 +489,26 @@ Currently, this API is designed for direct HTTP integration. Future releases may
 5. **CORS**: Configured for web frontend access
 6. **Authentication**: Multiple auth methods for different use cases
 
+## 🚀 New Features in v1.0
+
+### Enhanced Search and Filtering
+- **Real-time Search**: Debounced search with instant results
+- **Advanced Filters**: Salary range, date range, remote/onsite
+- **Tag-based Filtering**: Skill and technology-specific filtering
+- **Smart Pagination**: Efficient data loading with cursor-based pagination
+
+### Modern UI/UX
+- **Gradient Design**: Professional dark theme with blue/purple gradients
+- **Responsive Layout**: Mobile-first design with desktop optimization
+- **Loading States**: Skeleton loaders and smooth transitions
+- **Micro-interactions**: Hover effects and smooth animations
+
+### Performance Optimizations
+- **Edge Runtime**: Selected endpoints use Edge Runtime for global distribution
+- **Strategic Caching**: Browser and server-side caching for improved performance
+- **Database Optimization**: Indexed queries and connection pooling
+- **Image Optimization**: Next.js Image component with lazy loading
+
 ## 📞 Support
 
 For API issues:
@@ -496,6 +517,11 @@ For API issues:
 3. Verify environment variables
 4. Review authentication tokens
 5. Check rate limiting status
+
+**Contact Information:**
+- **Live Site:** https://www.remotejobs.top
+- **API Issues:** Create an issue on GitHub
+- **Telegram Support:** @web3jobs88
 
 **📚 Related Documentation:**
 - [🚀 Production Deployment](./PRODUCTION_DEPLOYMENT_GUIDE.md) - Complete setup instructions
