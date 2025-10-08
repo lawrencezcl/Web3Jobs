@@ -50,13 +50,13 @@ export default function Breadcrumb({ items }: BreadcrumbProps) {
                 "@type": "ListItem",
                 "position": 1,
                 "name": "Web3 Jobs",
-                "item": "https://www.richidea.top"
+                "item": "https://www.remotejobs.top"
               },
               ...items.map((item, index) => ({
                 "@type": "ListItem",
                 "position": index + 2,
                 "name": item.label,
-                "item": item.href ? `https://www.richidea.top${item.href}` : undefined
+                "item": item.href ? `https://www.remotejobs.top${item.href}` : undefined
               }))
             ]
           })

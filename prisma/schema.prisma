@@ -29,6 +29,13 @@ model Job {
   seniorityLevel  String?  @db.VarChar(100)
   description     String?  @db.Text
 
+  // Featured job fields
+  featuredUntil   DateTime?
+  featuredTier    String?  @db.VarChar(50) // basic, premium, enterprise
+  featuredPrice   Decimal? @db.Decimal(10, 2)
+  featuredStatus  String?  @db.VarChar(50) @default("none") // none, pending_payment, active, expired
+  employerId      String?  @db.VarChar(255) // User who posted this job
+
   // Optimized indexes for common queries
   @@index([createdAt, postedAt, source])
   @@index([remote, postedAt]) // For remote job filtering with date sorting
@@ -41,6 +48,8 @@ model Job {
   @@index([tags]) // For tag-based searches
   @@index([source, postedAt]) // For source-based filtering with date sorting
   @@index([remote, country, postedAt]) // Composite index for location + remote filtering
+  @@index([featuredStatus, featuredUntil]) // For featured job queries
+  @@index([employerId, featuredStatus]) // For employer's featured jobs
 }
 
 model Subscriber {
@@ -51,6 +60,22 @@ model Subscriber {
   createdAt  DateTime @default(now())
 
   @@index([type, identifier])
+}
+
+model JobAlert {
+  id         String    @id @default(cuid())
+  email      String    @db.VarChar(255)
+  topics     String    @db.Text // comma-separated topics
+  frequency  String    @db.VarChar(50) @default("daily") // daily, weekly, biweekly
+  isActive   Boolean   @default(true)
+  lastSent   DateTime  @default(now())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@unique([email, topics])
+  @@index([email, isActive])
+  @@index([frequency, lastSent])
+  @@index([isActive, lastSent])
 }
 
 model CrawlLog {
@@ -67,4 +92,201 @@ model CrawlLog {
 
   @@index([source, startTime])
   @@index([status, startTime])
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique @db.VarChar(255)
+  name          String?   @db.VarChar(255)
+  avatar        String?   @db.VarChar(500)
+  bio           String?   @db.Text
+  location      String?   @db.VarChar(255)
+  website       String?   @db.VarChar(500)
+  github        String?   @db.VarChar(255)
+  twitter       String?   @db.VarChar(255)
+  linkedin      String?   @db.VarChar(500)
+  skills        String?   @db.Text // JSON array of skills
+  experience    String?   @db.Text // JSON array of experience
+  education     String?   @db.Text // JSON array of education
+  resumeUrl     String?   @db.VarChar(500)
+  portfolioUrl  String?   @db.VarChar(500)
+  jobSeeking    Boolean   @default(true)
+  preferredRoles String?  @db.Text // JSON array of preferred roles
+  preferredLocations String? @db.Text // JSON array of preferred locations
+  salaryMin     Int?
+  salaryMax     Int?
+  currency      String?   @db.VarChar(10) @default("USD")
+  noticePeriod  Int?      // days
+  isActive      Boolean   @default(true)
+  lastLoginAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  applications   Application[]
+  savedJobs      SavedJob[]
+  jobAlerts      JobAlert[]
+  subscriptions  Subscription[]
+
+  @@index([email])
+  @@index([isActive, lastLoginAt])
+  @@index([jobSeeking, createdAt])
+}
+
+model Application {
+  id          String    @id @default(cuid())
+  userId      String    @db.VarChar(255)
+  jobId       String    @db.VarChar(255)
+  coverLetter String?   @db.Text
+  status      String    @db.VarChar(50) @default("applied") // applied, interviewing, offered, rejected, withdrawn
+  appliedAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  notes       String?   @db.Text // private notes for the user
+  followUpAt  DateTime? // when to follow up
+  employerResponse String? @db.Text // response from employer
+  salaryOffered String? @db.VarChar(255)
+
+  // Relations
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@index([userId, appliedAt])
+  @@index([jobId, status])
+  @@index([status, appliedAt])
+}
+
+model SavedJob {
+  id        String   @id @default(cuid())
+  userId    String   @db.VarChar(255)
+  jobId     String   @db.VarChar(255)
+  notes     String?  @db.Text
+  savedAt   DateTime @default(now())
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobId])
+  @@index([userId, savedAt])
+}
+
+model JobAlert {
+  id          String   @id @default(cuid())
+  userId      String   @db.VarChar(255)
+  name        String   @db.VarChar(255)
+  keywords    String?  @db.Text // JSON array
+  tags        String?  @db.Text // JSON array
+  companies   String?  @db.Text // JSON array
+  locations   String?  @db.Text // JSON array
+  remote      Boolean  @default(true)
+  salaryMin   Int?
+  salaryMax   Int?
+  currency    String?  @db.VarChar(10) @default("USD")
+  frequency   String   @db.VarChar(50) @default("daily") // daily, weekly, monthly
+  isActive    Boolean  @default(true)
+  lastSentAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isActive])
+  @@index([frequency, lastSentAt])
+}
+
+model Company {
+  id          String   @id @default(cuid())
+  name        String   @db.VarChar(255)
+  slug        String   @unique @db.VarChar(255)
+  description String?  @db.Text
+  website     String?  @db.VarChar(500)
+  logo        String?  @db.VarChar(500)
+  industry    String?  @db.VarChar(100)
+  size        String?  @db.VarChar(50) // 1-10, 11-50, 51-200, 201-500, 500+
+  location    String?  @db.VarChar(255)
+  founded     Int?
+  funding     String?  @db.VarChar(255) // total funding
+  stage       String?  @db.VarChar(100) // seed, series-a, series-b, etc
+  technologies String? @db.Text // JSON array of tech stack
+  benefits    String?  @db.Text // JSON array of benefits
+  culture     String?  @db.Text
+  social      String?  @db.Text // JSON object with social links
+  featured    Boolean  @default(false)
+  verified    Boolean  @default(false)
+  jobsCount   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([slug])
+  @@index([featured, verified])
+  @@index([industry, size])
+}
+
+model VerificationRequest {
+  id               String   @id @default(cuid())
+  companyId        String   @db.VarChar(255)
+  userId           String   @db.VarChar(255)
+  companyName      String   @db.VarChar(255)
+  website          String   @db.VarChar(500)
+  contactEmail     String   @db.VarChar(255)
+  contactName      String   @db.VarChar(255)
+  companySize      String   @db.VarChar(50)
+  industry         String   @db.VarChar(100)
+  founded          Int?
+  description      String   @db.Text
+  hqLocation       String   @db.VarChar(255)
+  socialLinks      String?  @db.Text // JSON object
+  documents        String?  @db.Text // JSON object with document URLs
+  additionalInfo   String?  @db.Text
+  status           String   @db.VarChar(50) @default("pending") // pending, approved, rejected, needs_more_info
+  submittedAt      DateTime @default(now())
+  reviewedAt       DateTime?
+  reviewedBy       String?  @db.VarChar(255) // Admin user ID
+  reviewNotes      String?  @db.Text
+
+  @@index([companyId, status])
+  @@index([userId, status])
+  @@index([status, submittedAt])
+}
+
+model PaymentRecord {
+  id              String    @id @default(cuid())
+  jobId           String    @db.VarChar(255)
+  userId          String    @db.VarChar(255)
+  amount          Decimal   @db.Decimal(10, 2)
+  currency        String    @db.VarChar(10) @default("USD")
+  status          String    @db.VarChar(50) @default("pending") // pending, completed, failed, refunded
+  paymentMethod   String    @db.VarChar(50) @default("stripe") // stripe, paypal, crypto
+  paymentMethodId String?   @db.VarChar(255)
+  transactionId   String?   @db.VarChar(255)
+  paidAt          DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([jobId, status])
+  @@index([userId, status])
+  @@index([paymentMethod, status])
+  @@index([paidAt])
+}
+
+// Update the existing Subscriber model to include metadata and type
+model Subscription {
+  id         String   @id @default(cuid())
+  userId     String?  @db.VarChar(255)
+  email      String   @db.VarChar(255)
+  type       String   @db.VarChar(50) @default("email") // email, push, sms
+  identifier String   @db.VarChar(255) // email, phone, push token
+  topics     String?  @db.Text // comma-separated topics
+  frequency  String   @db.VarChar(50) @default("daily") // daily, weekly, monthly
+  isActive   Boolean  @default(true)
+  metadata   String?  @db.Text // JSON object with additional data
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([type, identifier])
+  @@index([frequency, isActive])
+  @@index([userId])
 }

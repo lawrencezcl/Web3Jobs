@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { Button } from '@/components/ui/button'
-import { Github, ExternalLink, MessageCircle, Star } from 'lucide-react'
+import { Github, ExternalLink, MessageCircle, Star, Share2 } from 'lucide-react'
 
 interface TelegramWebApp {
   MainButton: {
@@ -247,19 +247,19 @@ export function MiniAppFooter({ telegram }: MiniAppFooterProps) {
         {/* Links */}
         <div className="flex justify-center space-x-4 text-xs" style={{ color: 'var(--tg-theme-link-color)' }}>
           <button
-            onClick={() => telegram?.openLink('https://www.richidea.top')}
+            onClick={() => telegram?.openLink('https://www.remotejobs.top')}
             className="hover:underline"
           >
             Website
           </button>
           <button
-            onClick={() => telegram?.openLink('mailto:support@richidea.top')}
+            onClick={() => telegram?.openLink('mailto:support@remotejobs.top')}
             className="hover:underline"
           >
             Support
           </button>
           <button
-            onClick={() => telegram?.openLink('https://www.richidea.top/privacy')}
+            onClick={() => telegram?.openLink('https://www.remotejobs.top/privacy')}
             className="hover:underline"
           >
             Privacy

@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Web3 Jobs | Remote Blockchain Developer Careers 2024',
     description: 'Find the best Web3, blockchain, cryptocurrency & DeFi jobs. Remote opportunities at leading crypto companies.',
-    url: 'https://www.richidea.top',
+    url: 'https://www.remotejobs.top',
     siteName: 'Web3 Jobs Platform',
     images: [
       {
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     images: ['/og-image.png'],
   },
   alternates: {
-    canonical: 'https://www.richidea.top',
+    canonical: 'https://www.remotejobs.top',
   },
 }
 

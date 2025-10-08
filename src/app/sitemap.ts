@@ -4,7 +4,7 @@ import { prisma } from '../lib/db'
 export const revalidate = 3600 // Revalidate sitemap every hour
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://www.richidea.top'
+  const baseUrl = 'https://www.remotejobs.top'
   
   try {
     // Get recent and important job posts for better crawling priority

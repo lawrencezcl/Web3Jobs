@@ -26,7 +26,7 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: 'https://www.richidea.top/sitemap.xml',
-    host: 'https://www.richidea.top',
+    sitemap: 'https://www.remotejobs.top/sitemap.xml',
+    host: 'https://www.remotejobs.top',
   }
 }

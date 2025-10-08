@@ -181,7 +181,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       type: 'article',
-      url: `https://www.richidea.top/jobs/${job.id}`,
+      url: `https://www.remotejobs.top/jobs/${job.id}`,
       siteName: 'Web3 Jobs Platform',
       publishedTime: job.postedAt?.toISOString() || job.createdAt.toISOString(),
       modifiedTime: job.createdAt.toISOString(),
@@ -216,7 +216,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
     },
     alternates: {
-      canonical: `https://www.richidea.top/jobs/${job.id}`,
+      canonical: `https://www.remotejobs.top/jobs/${job.id}`,
     },
   }
 }

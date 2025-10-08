@@ -1,23 +1,28 @@
 'use client'
 import { useEffect, useState, useCallback, useMemo } from 'react'
+import Link from 'next/link'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
 import { Card } from './ui/card'
 import { Badge } from './ui/badge'
-import Link from 'next/link'
-import { 
-  Search, 
-  Filter, 
-  MapPin, 
-  Clock, 
-  DollarSign, 
-  Users, 
-  TrendingUp, 
+import NewsletterSignup from './ui/newsletter-signup'
+import BookmarkButton, { CompactBookmarkButton } from './ui/bookmark-button'
+import AdvancedFilters from './ui/advanced-filters'
+import {
+  Search,
+  Filter,
+  MapPin,
+  Clock,
+  DollarSign,
+  Users,
+  TrendingUp,
   Star,
   ArrowRight,
   Globe,
   Shield,
-  Zap
+  Zap,
+  Building,
+  Bookmark
 } from 'lucide-react'
 
 type Job = {
@@ -68,11 +73,29 @@ export default function ModernHomepage({ initialData }: ModernHomepageProps) {
   const [total, setTotal] = useState(initialData?.totalCount || 0)
   const [loading, setLoading] = useState(false)
   const [featuredJobs, setFeaturedJobs] = useState<Job[]>(initialData?.featuredJobs || [])
+  const [advancedFilters, setAdvancedFilters] = useState({
+    salaryMin: '',
+    salaryMax: '',
+    experienceLevel: '',
+    companySize: '',
+    jobType: '',
+    region: '',
+    timezone: ''
+  })
 
   const search = useCallback(async () => {
     setLoading(true)
     const params = new URLSearchParams({ q, tag, remote, limit: '12', page: '1' })
     if (dateRange) params.append('dateRange', dateRange)
+
+    // Add advanced filters
+    if (advancedFilters.salaryMin) params.append('salaryMin', advancedFilters.salaryMin)
+    if (advancedFilters.salaryMax) params.append('salaryMax', advancedFilters.salaryMax)
+    if (advancedFilters.experienceLevel) params.append('experienceLevel', advancedFilters.experienceLevel)
+    if (advancedFilters.companySize) params.append('companySize', advancedFilters.companySize)
+    if (advancedFilters.jobType) params.append('jobType', advancedFilters.jobType)
+    if (advancedFilters.region) params.append('region', advancedFilters.region)
+    if (advancedFilters.timezone) params.append('timezone', advancedFilters.timezone)
 
     try {
       const res = await fetch('/api/jobs?' + params.toString(), {
@@ -94,7 +117,7 @@ export default function ModernHomepage({ initialData }: ModernHomepageProps) {
     } finally {
       setLoading(false)
     }
-  }, [q, tag, remote, dateRange])
+  }, [q, tag, remote, dateRange, advancedFilters])
 
   const loadFeaturedJobs = useCallback(async () => {
     // Only fetch if we don't have initial data
@@ -281,7 +304,10 @@ export default function ModernHomepage({ initialData }: ModernHomepageProps) {
                         <div className="text-sm text-slate-500">{job.postedAt ? formatDate(job.postedAt) : 'Recently'}</div>
                       </div>
                     </div>
-                    <Star className="w-5 h-5 text-yellow-400" />
+                    <div className="flex items-center gap-2">
+                      <BookmarkButton job={job} size="sm" />
+                      <Star className="w-5 h-5 text-yellow-400" />
+                    </div>
                   </div>
                   
                   <Link href={`/jobs/${job.id}`} className="block">
@@ -327,6 +353,10 @@ export default function ModernHomepage({ initialData }: ModernHomepageProps) {
       <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="bg-slate-900/50 backdrop-blur-sm rounded-2xl p-6 mb-8 border border-slate-700/50">
+            <AdvancedFilters
+              onFiltersChange={setAdvancedFilters}
+              className="mb-6"
+            />
             <div className="flex flex-wrap gap-4 mb-4">
               <div className="flex-1 min-w-[200px]">
                 <Input
@@ -438,21 +468,24 @@ export default function ModernHomepage({ initialData }: ModernHomepageProps) {
                   </div>
                   
                   <div className="flex justify-between items-center">
-                    <Link 
+                    <Link
                       href={`/jobs/${job.id}`}
                       className="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors font-medium"
                     >
                       View Details
                       <ArrowRight className="w-4 h-4 ml-1" />
                     </Link>
-                    <a
-                      href={job.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md transition-colors"
-                    >
-                      Apply
-                    </a>
+                    <div className="flex items-center gap-2">
+                      <BookmarkButton job={job} size="sm" />
+                      <a
+                        href={job.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md transition-colors"
+                      >
+                        Apply
+                      </a>
+                    </div>
                   </div>
                 </Card>
               ))}
@@ -525,27 +558,10 @@ export default function ModernHomepage({ initialData }: ModernHomepageProps) {
         </div>
       </section>
 
-      {/* Newsletter Section */}
+      {/* Job Alert Section */}
       <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl p-8 border border-blue-500/20">
-            <h2 className="text-3xl font-bold mb-4">Never Miss a Web3 Opportunity</h2>
-            <p className="text-slate-400 mb-6">
-              Get weekly digests of the hottest Web3 jobs delivered to your inbox
-            </p>
-            <div className="flex max-w-md mx-auto">
-              <Input
-                placeholder="Enter your email"
-                className="rounded-r-none bg-white/5 border-white/10"
-              />
-              <Button className="rounded-l-none bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">
-                Subscribe
-              </Button>
-            </div>
-            <p className="text-xs text-slate-500 mt-3">
-              Join 10,000+ Web3 professionals. Unsubscribe anytime.
-            </p>
-          </div>
+          <NewsletterSignup />
         </div>
       </section>
 
@@ -576,6 +592,10 @@ export default function ModernHomepage({ initialData }: ModernHomepageProps) {
             <div>
               <h4 className="font-semibold mb-4">Companies</h4>
               <ul className="space-y-2 text-slate-400">
+                <li><Link href="/companies" className="hover:text-white transition-colors flex items-center">
+                  <Building className="w-4 h-4 mr-1" />
+                  All Companies
+                </Link></li>
                 <li><Link href="/jobs?q=defi+protocol" className="hover:text-white transition-colors">DeFi Protocols</Link></li>
                 <li><Link href="/jobs?q=nft" className="hover:text-white transition-colors">NFT Platforms</Link></li>
                 <li><Link href="/jobs?q=layer+1" className="hover:text-white transition-colors">Layer 1 Blockchains</Link></li>
@@ -585,9 +605,19 @@ export default function ModernHomepage({ initialData }: ModernHomepageProps) {
             <div>
               <h4 className="font-semibold mb-4">Resources</h4>
               <ul className="space-y-2 text-slate-400">
+                <li><Link href="/saved" className="hover:text-white transition-colors flex items-center">
+                  <Bookmark className="w-4 h-4 mr-1" />
+                  Saved Jobs
+                </Link></li>
+                <li><Link href="/companies" className="hover:text-white transition-colors flex items-center">
+                  <Building className="w-4 h-4 mr-1" />
+                  Companies
+                </Link></li>
+                <li><Link href="/salaries" className="hover:text-white transition-colors flex items-center">
+                  <DollarSign className="w-4 h-4 mr-1" />
+                  Salary Insights
+                </Link></li>
                 <li><a href="https://github.com/your-repo/web3-jobs-career-guide" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Career Guide</a></li>
-                <li><a href="https://www.richidea.top/salary-reports" className="hover:text-white transition-colors">Salary Reports</a></li>
-                <li><a href="https://www.richidea.top/interview-tips" className="hover:text-white transition-colors">Interview Tips</a></li>
                 <li><a href="https://github.com/your-repo/web3-learning-path" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Learning Path</a></li>
               </ul>
             </div>

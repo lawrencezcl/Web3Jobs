@@ -2,6 +2,9 @@ import './globals.css'
 import type { ReactNode } from 'react'
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata } from 'next'
+import OfflineIndicator from '@/components/ui/offline-indicator'
+import PWAInstallPrompt from '@/components/ui/pwa-install-prompt'
+import PushNotificationPrompt from '@/components/ui/push-notification-prompt'
 
 export const metadata: Metadata = {
   title: 'Web3 Jobs | Remote Blockchain Developer Careers 2024',
@@ -23,7 +26,7 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://www.richidea.top'),
+  metadataBase: new URL('https://www.remotejobs.top'),
   alternates: {
     canonical: '/',
     languages: {
@@ -34,7 +37,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://www.richidea.top',
+    url: 'https://www.remotejobs.top',
     title: 'Web3 Jobs | Remote Blockchain Developer Careers 2024',
     description: 'Find the best Web3, blockchain, cryptocurrency & DeFi jobs. Remote opportunities at leading crypto companies.',
     siteName: 'Web3 Jobs Platform',
@@ -88,8 +91,19 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
         />
-        <link rel="dns-prefetch" href="https://www.richidea.top" />
+        <link rel="dns-prefetch" href="https://www.remotejobs.top" />
         <link rel="preload" href="/og-image.png" as="image" type="image/png" />
+
+        {/* PWA Manifest */}
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Web3 Jobs" />
+        <meta name="application-name" content="Web3 Jobs" />
+        <meta name="msapplication-TileColor" content="#0f172a" />
+        <meta name="theme-color" content="#3b82f6" />
+
         {/* Structured Data */}
         <script
           type="application/ld+json"
@@ -98,11 +112,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               "@context": "https://schema.org",
               "@type": "WebSite",
               "name": "Web3 Jobs Platform",
-              "url": "https://www.richidea.top",
+              "url": "https://www.remotejobs.top",
               "description": "Find the best Web3, blockchain, cryptocurrency & DeFi jobs",
               "potentialAction": {
                 "@type": "SearchAction",
-                "target": "https://www.richidea.top/search?q={search_term_string}",
+                "target": "https://www.remotejobs.top/search?q={search_term_string}",
                 "query-input": "required name=search_term_string"
               }
             })
@@ -113,6 +127,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <div className="min-h-screen">
           {children}
         </div>
+        <OfflineIndicator />
+        <PWAInstallPrompt />
+        <PushNotificationPrompt />
         <Analytics />
       </body>
     </html>
