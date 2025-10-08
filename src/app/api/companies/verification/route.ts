@@ -189,15 +189,13 @@ export async function GET(request: NextRequest) {
       // Get verification requests for a user
       const verificationRequests = await prisma.verificationRequest.findMany({
         where: { userId: decoded.userId },
-        include: {
-          company: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-              verified: true,
-            },
-          },
+        select: {
+          id: true,
+          companyId: true,
+          companyName: true,
+          status: true,
+          submittedAt: true,
+          reviewedAt: true,
         },
         orderBy: { submittedAt: 'desc' },
       })

@@ -71,7 +71,10 @@ export default function CompaniesPage() {
           if (!companyMap.has(job.company)) {
             companyMap.set(job.company, [])
           }
-          companyMap.get(job.company).push(job)
+          const jobs = companyMap.get(job.company)
+          if (jobs) {
+            jobs.push(job)
+          }
         })
 
         // Create company objects
@@ -91,7 +94,7 @@ export default function CompaniesPage() {
             slug: companyName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
             description: `Leading Web3 company specializing in ${uniqueTags.slice(0, 3).join(', ')}. Building the future of decentralized technology.`,
             headquarters: uniqueLocations[0] || 'Remote',
-            founded: 2018 + Math.floor(Math.random() * 6), // Random year between 2018-2023
+            founded: String(2018 + Math.floor(Math.random() * 6)), // Random year between 2018-2023
             size: estimateCompanySize(companyJobs.length),
             industry: categorizeIndustry(uniqueTags),
             tags: uniqueTags.slice(0, 8),
@@ -150,12 +153,29 @@ export default function CompaniesPage() {
       return matchesSearch && matchesIndustry && matchesSize && matchesVerified
     })
     .sort((a, b) => {
-      let aValue: any = a[sortBy]
-      let bValue: any = b[sortBy]
+      let aValue: any
+      let bValue: any
 
-      if (sortBy === 'name') {
-        aValue = aValue.toLowerCase()
-        bValue = bValue.toLowerCase()
+      switch (sortBy) {
+        case 'name':
+          aValue = a.name?.toLowerCase() || ''
+          bValue = b.name?.toLowerCase() || ''
+          break
+        case 'jobs':
+          aValue = a.totalJobs || 0
+          bValue = b.totalJobs || 0
+          break
+        case 'rating':
+          aValue = a.rating || 0
+          bValue = b.rating || 0
+          break
+        case 'growth':
+          aValue = a.growth || 0
+          bValue = b.growth || 0
+          break
+        default:
+          aValue = a.name?.toLowerCase() || ''
+          bValue = b.name?.toLowerCase() || ''
       }
 
       if (sortOrder === 'asc') {
@@ -197,7 +217,7 @@ export default function CompaniesPage() {
           </div>
           <div className="flex items-center">
             <Briefcase className="w-5 h-5 text-green-400 mr-2" />
-            <span className="text-slate-300">{companies.reduce((sum, c) => sum + c.activeJobs, 0)} Open Positions</span>
+            <span className="text-slate-300">{companies.reduce((sum, c) => sum + (c.activeJobs || 0), 0)} Open Positions</span>
           </div>
           <div className="flex items-center">
             <CheckCircle className="w-5 h-5 text-amber-400 mr-2" />
@@ -258,11 +278,12 @@ export default function CompaniesPage() {
                       {company.rating?.toFixed(1)}
                     </div>
                   </div>
-                  <Button size="sm" asChild>
-                    <a href={`/companies/${company.slug}`}>
-                      View Jobs
-                    </a>
-                  </Button>
+                  <a
+                    href={`/companies/${company.slug}`}
+                    className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    View Jobs
+                  </a>
                 </div>
               </Card>
             ))}
@@ -275,10 +296,10 @@ export default function CompaniesPage() {
         <section>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">Recently Hiring</h2>
-            <Badge variant="secondary" className="text-green-400">
+            <span className="bg-green-500/20 text-green-400 px-2 py-1 rounded-md text-xs font-medium inline-flex items-center">
               <TrendingUp className="w-4 h-4 mr-1" />
               Active Now
-            </Badge>
+            </span>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {recentlyHiring.map((company) => (
@@ -411,7 +432,7 @@ export default function CompaniesPage() {
           {(searchQuery || selectedIndustry || selectedSize || verifiedOnly) && (
             <div className="flex flex-wrap gap-2 pt-2 border-t">
               {searchQuery && (
-                <Badge variant="secondary" className="text-xs">
+                <span className="bg-slate-700 text-slate-300 px-2 py-1 rounded-md text-xs">
                   Search: {searchQuery}
                   <button
                     onClick={() => setSearchQuery('')}
@@ -419,10 +440,10 @@ export default function CompaniesPage() {
                   >
                     ×
                   </button>
-                </Badge>
+                </span>
               )}
               {selectedIndustry && (
-                <Badge variant="secondary" className="text-xs">
+                <span className="bg-slate-700 text-slate-300 px-2 py-1 rounded-md text-xs">
                   Industry: {selectedIndustry}
                   <button
                     onClick={() => setSelectedIndustry('')}
@@ -430,10 +451,10 @@ export default function CompaniesPage() {
                   >
                     ×
                   </button>
-                </Badge>
+                </span>
               )}
               {selectedSize && (
-                <Badge variant="secondary" className="text-xs">
+                <span className="bg-slate-700 text-slate-300 px-2 py-1 rounded-md text-xs">
                   Size: {selectedSize}
                   <button
                     onClick={() => setSelectedSize('')}
@@ -441,10 +462,10 @@ export default function CompaniesPage() {
                   >
                     ×
                   </button>
-                </Badge>
+                </span>
               )}
               {verifiedOnly && (
-                <Badge variant="secondary" className="text-xs">
+                <span className="bg-slate-700 text-slate-300 px-2 py-1 rounded-md text-xs">
                   Verified Only
                   <button
                     onClick={() => setVerifiedOnly(false)}
@@ -452,7 +473,7 @@ export default function CompaniesPage() {
                   >
                     ×
                   </button>
-                </Badge>
+                </span>
               )}
             </div>
           )}
@@ -543,16 +564,17 @@ export default function CompaniesPage() {
                     <span className="text-sm font-medium">{company.rating?.toFixed(1)}</span>
                   </div>
                   {company.recentHiring && (
-                    <Badge className="text-xs bg-green-500/20 text-green-400 border-green-500/30">
+                    <span className="text-xs bg-green-500/20 text-green-400 border border-green-500/30 px-2 py-1 rounded-md font-medium">
                       Actively Hiring
-                    </Badge>
+                    </span>
                   )}
                 </div>
-                <Button size="sm" asChild>
-                  <a href={`/companies/${company.slug}`}>
-                    View Profile
-                  </a>
-                </Button>
+                <a
+                  href={`/companies/${company.slug}`}
+                  className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  View Profile
+                </a>
               </div>
             </Card>
           ))}

@@ -102,8 +102,8 @@ export default function NewsletterSignup({ className = '', variant = 'default' }
         setMessage('🎉 Successfully subscribed! Check your email for confirmation.')
 
         // Track successful signup
-        if (typeof window !== 'undefined' && window.gtag) {
-          window.gtag('event', 'newsletter_signup', {
+        if (typeof window !== 'undefined' && (window as any).gtag) {
+          (window as any).gtag('event', 'newsletter_signup', {
             email: email,
             frequency: frequency,
             keywords_count: selectedKeywords.length

@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import BookmarkButton, { CompactBookmarkButton } from '@/components/ui/bookmark-button'
 import {
@@ -67,7 +66,7 @@ interface Job {
 
 export default function CompanyProfilePage() {
   const params = useParams()
-  const company = params.company as string
+  const companySlug = params.company as string
 
   const [company, setCompany] = useState<Company | null>(null)
   const [jobs, setJobs] = useState<Job[]>([])
@@ -87,7 +86,7 @@ export default function CompanyProfilePage() {
     setLoading(true)
     try {
       // Fetch company jobs
-      const jobsResponse = await fetch(`/api/jobs?company=${encodeURIComponent(company)}&limit=100`)
+      const jobsResponse = await fetch(`/api/jobs?company=${encodeURIComponent(companySlug)}&limit=100`)
       if (jobsResponse.ok) {
         const jobsData = await jobsResponse.json()
         setJobs(jobsData.items || [])
@@ -100,14 +99,14 @@ export default function CompanyProfilePage() {
 
           setCompany({
             name: firstJob.company,
-            slug: company,
+            slug: companySlug,
             description: `Leading Web3 company specializing in ${uniqueTags.slice(0, 3).join(', ')}.`,
             website: extractWebsiteFromUrl(firstJob.url),
-            headquarters: uniqueLocations[0] || 'Remote',
+            headquarters: (uniqueLocations[0] as string) || 'Remote',
             founded: '2020',
             size: estimateCompanySize(jobsData.items.length),
             industry: 'Blockchain & Cryptocurrency',
-            tags: uniqueTags.slice(0, 10),
+            tags: uniqueTags.slice(0, 10) as string[],
             verified: Math.random() > 0.5, // Random verification for demo
             rating: 4.2 + Math.random() * 0.8, // Random rating 4.2-5.0
             totalJobs: jobsData.total || jobsData.items.length,
@@ -211,8 +210,8 @@ export default function CompanyProfilePage() {
           <p className="text-slate-400 mb-6">
             We couldn't find a company with the name "{company}"
           </p>
-          <Button asChild>
-            <a href="/jobs">Browse All Jobs</a>
+          <Button onClick={() => window.location.href = '/jobs'}>
+            Browse All Jobs
           </Button>
         </Card>
       </div>
@@ -232,10 +231,12 @@ export default function CompanyProfilePage() {
               <div className="flex items-center space-x-3 mb-2">
                 <h1 className="text-3xl font-bold">{company.name}</h1>
                 {company.verified && (
-                  <CheckCircle className="w-6 h-6 text-blue-400" title="Verified Company" />
+                  <div title="Verified Company">
+                    <CheckCircle className="w-6 h-6 text-blue-400" />
+                  </div>
                 )}
                 {company.featured && (
-                  <Badge className="bg-amber-500 text-white">Featured</Badge>
+                  <span className="bg-amber-500 text-white px-2 py-1 rounded-md text-xs">Featured</span>
                 )}
               </div>
               <div className="flex items-center space-x-4 text-slate-400">
@@ -257,12 +258,15 @@ export default function CompanyProfilePage() {
 
           <div className="flex items-center space-x-3">
             {company.website && company.website !== '#' && (
-              <Button variant="outline" asChild>
-                <a href={company.website} target="_blank" rel="noopener noreferrer">
-                  <Globe className="w-4 h-4 mr-2" />
-                  Website
-                </a>
-              </Button>
+              <a
+                href={company.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              >
+                <Globe className="w-4 h-4 mr-2" />
+                Website
+              </a>
             )}
             <Button>
               <ExternalLink className="w-4 h-4 mr-2" />
@@ -313,10 +317,10 @@ export default function CompanyProfilePage() {
           <div className="mt-6">
             <h3 className="text-sm font-medium text-slate-400 mb-3">Technologies & Focus Areas</h3>
             <div className="flex flex-wrap gap-2">
-              {company.tags.map((tag, index) => (
-                <Badge key={index} className="bg-slate-700 border-slate-600">
+              {company.tags.map((tag: string, index: number) => (
+                <span key={index} className="bg-slate-700 border border-slate-600 px-2 py-1 rounded-md text-xs">
                   {tag.trim()}
-                </Badge>
+                </span>
               ))}
             </div>
           </div>
@@ -329,28 +333,37 @@ export default function CompanyProfilePage() {
           <h3 className="text-lg font-semibold mb-4">Connect with {company.name}</h3>
           <div className="flex items-center space-x-4">
             {company.social.twitter && (
-              <Button variant="outline" size="sm" asChild>
-                <a href={`https://twitter.com/${company.social.twitter}`} target="_blank" rel="noopener noreferrer">
-                  <Twitter className="w-4 h-4 mr-2" />
-                  Twitter
-                </a>
-              </Button>
+              <a
+                href={`https://twitter.com/${company.social.twitter}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              >
+                <Twitter className="w-4 h-4 mr-2" />
+                Twitter
+              </a>
             )}
             {company.social.linkedin && (
-              <Button variant="outline" size="sm" asChild>
-                <a href={company.social.linkedin} target="_blank" rel="noopener noreferrer">
-                  <Linkedin className="w-4 h-4 mr-2" />
-                  LinkedIn
-                </a>
-              </Button>
+              <a
+                href={company.social.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              >
+                <Linkedin className="w-4 h-4 mr-2" />
+                LinkedIn
+              </a>
             )}
             {company.social.github && (
-              <Button variant="outline" size="sm" asChild>
-                <a href={company.social.github} target="_blank" rel="noopener noreferrer">
-                  <Github className="w-4 h-4 mr-2" />
-                  GitHub
-                </a>
-              </Button>
+              <a
+                href={company.social.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              >
+                <Github className="w-4 h-4 mr-2" />
+                GitHub
+              </a>
             )}
           </div>
         </Card>
@@ -407,7 +420,7 @@ export default function CompanyProfilePage() {
                 className="w-full bg-slate-800 border border-slate-700 rounded-md px-3 py-2 text-slate-100"
               >
                 <option value="">All Locations</option>
-                {uniqueLocations.map(location => (
+                {uniqueLocations.filter((location): location is string => Boolean(location)).map(location => (
                   <option key={location} value={location}>
                     {location}
                   </option>
@@ -454,7 +467,7 @@ export default function CompanyProfilePage() {
           {(searchQuery || selectedDepartment || selectedLocation || remoteOnly) && (
             <div className="flex flex-wrap gap-2 pt-2 border-t">
               {searchQuery && (
-                <Badge variant="secondary" className="text-xs">
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-800">
                   Search: {searchQuery}
                   <button
                     onClick={() => setSearchQuery('')}
@@ -462,10 +475,10 @@ export default function CompanyProfilePage() {
                   >
                     ×
                   </button>
-                </Badge>
+                </span>
               )}
               {selectedDepartment && (
-                <Badge variant="secondary" className="text-xs">
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-800">
                   Department: {selectedDepartment}
                   <button
                     onClick={() => setSelectedDepartment('')}
@@ -473,10 +486,10 @@ export default function CompanyProfilePage() {
                   >
                     ×
                   </button>
-                </Badge>
+                </span>
               )}
               {selectedLocation && (
-                <Badge variant="secondary" className="text-xs">
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-800">
                   Location: {selectedLocation}
                   <button
                     onClick={() => setSelectedLocation('')}
@@ -484,10 +497,10 @@ export default function CompanyProfilePage() {
                   >
                     ×
                   </button>
-                </Badge>
+                </span>
               )}
               {remoteOnly && (
-                <Badge variant="secondary" className="text-xs">
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-800">
                   Remote Only
                   <button
                     onClick={() => setRemoteOnly(false)}
@@ -495,7 +508,7 @@ export default function CompanyProfilePage() {
                   >
                     ×
                   </button>
-                </Badge>
+                </span>
               )}
             </div>
           )}
@@ -544,14 +557,14 @@ export default function CompanyProfilePage() {
                       {job.tags && (
                         <div className="flex flex-wrap gap-2 mb-4">
                           {job.tags.split(',').filter(Boolean).slice(0, 4).map((tag) => (
-                            <Badge key={tag} className="text-xs bg-slate-700 border-slate-600">
+                            <span key={tag} className="text-xs bg-slate-700 border border-slate-600 px-2 py-1 rounded-md">
                               {tag.trim()}
-                            </Badge>
+                            </span>
                           ))}
                           {job.tags.split(',').filter(Boolean).length > 4 && (
-                            <Badge className="text-xs bg-slate-600 border-slate-500">
+                            <span className="text-xs bg-slate-600 border border-slate-500 px-2 py-1 rounded-md">
                               +{job.tags.split(',').filter(Boolean).length - 4} more
-                            </Badge>
+                            </span>
                           )}
                         </div>
                       )}

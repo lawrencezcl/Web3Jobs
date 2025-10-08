@@ -56,8 +56,8 @@ export default function BookmarkButton({
     }, 300)
 
     // Optional: Show toast notification
-    if (typeof window !== 'undefined' && window.showToast) {
-      window.showToast(
+    if (typeof window !== 'undefined' && (window as any).showToast) {
+      (window as any).showToast(
         newSaveState ? 'Job saved!' : 'Job removed from saved',
         'success'
       )
@@ -93,8 +93,8 @@ export default function BookmarkButton({
 
   return (
     <Button
-      variant={isSaved ? 'default' : variant}
-      size={size}
+      variant={isSaved ? 'default' : (variant === 'destructive' ? 'outline' : variant)}
+      size={size === 'default' ? 'md' : (size === 'icon' ? 'sm' : size)}
       onClick={handleClick}
       disabled={!isLoaded || isAnimating}
       className={`transition-all duration-300 ${

@@ -1,6 +1,5 @@
 'use client'
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Input } from './input'
 import { Card } from './card'
 import { Badge } from './badge'
 import {
@@ -171,14 +170,14 @@ export default function SearchSuggestions({
       <form onSubmit={handleSubmit} className="relative">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
-          <Input
+          <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={handleInputChange}
             onFocus={() => setShowSuggestions(true)}
             placeholder={placeholder}
-            className="pl-10 pr-10 py-3 bg-slate-800 border-slate-600 text-white placeholder-slate-400"
+            className="w-full pl-10 pr-10 py-3 bg-slate-800 border border-slate-600 text-white placeholder-slate-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
           {query && (
             <button

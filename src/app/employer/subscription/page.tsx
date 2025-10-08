@@ -15,8 +15,8 @@ import {
   Calendar,
   AlertCircle,
   Download,
-  Upgrade,
-  Downgrade,
+  // Upgrade,
+  // Downgrade,
   RefreshCw,
   DollarSign,
   FileText,
@@ -228,13 +228,13 @@ export default function SubscriptionManagement() {
                   <div>
                     <h2 className="text-2xl font-bold text-white">{subscription.planName} Plan</h2>
                     <div className="flex items-center gap-3 mt-2">
-                      <Badge className={getStatusColor(subscription.status)}>
+                      <span className={getStatusColor(subscription.status)}>
                         {subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1)}
-                      </Badge>
+                      </span>
                       {subscription.cancelAtPeriodEnd && (
-                        <Badge variant="outline" className="border-amber-500/50 text-amber-400">
+                        <span className="border-amber-500/50 text-amber-400">
                           Cancels on {formatDate(subscription.currentPeriodEnd)}
-                        </Badge>
+                        </span>
                       )}
                     </div>
                   </div>
@@ -317,7 +317,7 @@ export default function SubscriptionManagement() {
                   onClick={() => setShowUpgradeModal(true)}
                   className="bg-blue-500 hover:bg-blue-600"
                 >
-                  <Upgrade className="w-4 h-4 mr-2" />
+                  <Rocket className="w-4 h-4 mr-2" />
                   Upgrade Plan
                 </Button>
                 
@@ -384,9 +384,9 @@ export default function SubscriptionManagement() {
                         <div className="font-semibold text-white">
                           ${payment.amount} {payment.currency}
                         </div>
-                        <Badge className={getStatusColor(payment.status)}>
+                        <span className={getStatusColor(payment.status)}>
                           {payment.status}
-                        </Badge>
+                        </span>
                       </div>
                     </div>
                   ))}
@@ -437,7 +437,7 @@ export default function SubscriptionManagement() {
               <Button
                 onClick={handleCancelSubscription}
                 disabled={actionLoading}
-                variant="destructive"
+                variant="outline"
                 className="flex-1"
               >
                 {actionLoading ? 'Canceling...' : 'Cancel Subscription'}
@@ -488,7 +488,7 @@ export default function SubscriptionManagement() {
                   plan.popular ? 'ring-2 ring-blue-500' : ''
                 }`}>
                   {plan.popular && (
-                    <Badge className="mb-4 bg-blue-500 text-white">Most Popular</Badge>
+                    <span className="mb-4 bg-blue-500 text-white">Most Popular</span>
                   )}
                   
                   <h4 className="text-lg font-semibold text-white mb-2">{plan.name}</h4>

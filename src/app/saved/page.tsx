@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import BookmarkButton, { CompactBookmarkButton } from '@/components/ui/bookmark-button'
 import { useSavedJobs, type SavedJob } from '@/hooks/useSavedJobs'
@@ -65,22 +64,29 @@ export default function SavedJobsPage() {
       return matchesSearch && matchesCompany && matchesTag
     })
     .sort((a, b) => {
-      let aValue = a[sortBy]
-      let bValue = b[sortBy]
+      let comparison = 0
 
       if (sortBy === 'savedAt' || sortBy === 'postedAt') {
-        aValue = new Date(aValue || '').getTime()
-        bValue = new Date(bValue || '').getTime()
-      } else if (typeof aValue === 'string') {
-        aValue = aValue.toLowerCase()
-        bValue = bValue.toLowerCase()
+        const aTime = new Date(a[sortBy] || '').getTime()
+        const bTime = new Date(b[sortBy] || '').getTime()
+        comparison = aTime - bTime
+      } else {
+        let aValue = a[sortBy] || ''
+        let bValue = b[sortBy] || ''
+
+        if (typeof aValue === 'string') {
+          aValue = aValue.toLowerCase()
+          bValue = bValue.toLowerCase()
+        }
+
+        if (aValue > bValue) {
+          comparison = 1
+        } else if (aValue < bValue) {
+          comparison = -1
+        }
       }
 
-      if (sortOrder === 'asc') {
-        return aValue > bValue ? 1 : -1
-      } else {
-        return aValue < bValue ? 1 : -1
-      }
+      return sortOrder === 'asc' ? comparison : -comparison
     })
 
   // Get unique companies for filter
@@ -191,9 +197,9 @@ export default function SavedJobsPage() {
                 </Button>
 
                 <Button
-                  variant="destructive"
+                  variant="outline"
                   onClick={clearSavedJobs}
-                  className="text-sm"
+                  className="text-sm text-red-600 hover:text-red-700 border-red-600 hover:bg-red-50"
                 >
                   <Trash2 className="w-4 h-4 mr-1" />
                   Clear All
@@ -220,9 +226,9 @@ export default function SavedJobsPage() {
           <p className="text-slate-400 mb-6">
             Start saving jobs you're interested in and they'll appear here
           </p>
-          <Button asChild>
-            <a href="/jobs">Browse Jobs</a>
-          </Button>
+          <a href="/jobs" className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2">
+            Browse Jobs
+          </a>
         </Card>
       ) : (
         <>
@@ -334,7 +340,7 @@ export default function SavedJobsPage() {
               {(searchQuery || selectedCompany || selectedTag) && (
                 <div className="flex flex-wrap gap-2 pt-2 border-t">
                   {searchQuery && (
-                    <Badge variant="secondary" className="text-xs">
+                    <span className="bg-slate-700 text-slate-300 px-2 py-1 rounded-md text-xs">
                       Search: {searchQuery}
                       <button
                         onClick={() => setSearchQuery('')}
@@ -342,10 +348,10 @@ export default function SavedJobsPage() {
                       >
                         ×
                       </button>
-                    </Badge>
+                    </span>
                   )}
                   {selectedCompany && (
-                    <Badge variant="secondary" className="text-xs">
+                    <span className="bg-slate-700 text-slate-300 px-2 py-1 rounded-md text-xs">
                       Company: {selectedCompany}
                       <button
                         onClick={() => setSelectedCompany('')}
@@ -353,10 +359,10 @@ export default function SavedJobsPage() {
                       >
                         ×
                       </button>
-                    </Badge>
+                    </span>
                   )}
                   {selectedTag && (
-                    <Badge variant="secondary" className="text-xs">
+                    <span className="bg-slate-700 text-slate-300 px-2 py-1 rounded-md text-xs">
                       Tag: {selectedTag}
                       <button
                         onClick={() => setSelectedTag('')}
@@ -364,7 +370,7 @@ export default function SavedJobsPage() {
                       >
                         ×
                       </button>
-                    </Badge>
+                    </span>
                   )}
                 </div>
               )}
@@ -418,14 +424,14 @@ export default function SavedJobsPage() {
                   {job.tags && (
                     <div className="flex flex-wrap gap-1">
                       {job.tags.split(',').filter(Boolean).slice(0, 3).map((tag) => (
-                        <Badge key={tag} className="text-xs bg-slate-700 border-slate-600">
+                        <span key={tag} className="text-xs bg-slate-700 border-slate-600 px-2 py-1 rounded-md">
                           {tag.trim()}
-                        </Badge>
+                        </span>
                       ))}
                       {job.tags.split(',').filter(Boolean).length > 3 && (
-                        <Badge className="text-xs bg-slate-600 border-slate-500">
+                        <span className="text-xs bg-slate-600 border-slate-500 px-2 py-1 rounded-md">
                           +{job.tags.split(',').filter(Boolean).length - 3} more
-                        </Badge>
+                        </span>
                       )}
                     </div>
                   )}

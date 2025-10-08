@@ -70,6 +70,7 @@ export async function POST(request: NextRequest) {
         ...validatedData,
         postedAt: new Date(),
         createdAt: new Date(),
+        source: 'featured', // Required field for featured jobs
         // Additional fields for featured jobs
         featuredUntil: featuredUntil,
         featuredTier: validatedData.featuredTier,
@@ -174,6 +175,7 @@ export async function GET(request: NextRequest) {
         currency: true,
         employmentType: true,
         seniorityLevel: true,
+        description: true,
         postedAt: true,
         createdAt: true,
         featuredUntil: true,
@@ -250,7 +252,6 @@ export async function PUT(request: NextRequest) {
         featuredStatus: status,
         featuredUntil: featuredUntil ? new Date(featuredUntil) : undefined,
         featuredTier: featuredTier || undefined,
-        updatedAt: new Date(),
       },
     })
 
@@ -295,7 +296,6 @@ export async function PATCH(request: NextRequest) {
         where: { id: payment.jobId },
         data: {
           featuredStatus: 'active',
-          updatedAt: new Date(),
         },
       })
     }

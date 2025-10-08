@@ -97,15 +97,8 @@ export function MiniAppFooter({ telegram }: MiniAppFooterProps) {
 
       const shareText = '🚀 Find amazing Web3 jobs with this Telegram Mini App!\n\n💼 Remote & on-site positions\n🔔 Real-time alerts\n📱 Mobile optimized\n\n👉 @Web3job88bot'
 
-      // Try native sharing
-      if (telegram.shareURL) {
-        try {
-          telegram.shareURL('https://t.me/Web3job88bot', shareText)
-          return
-        } catch (error) {
-          console.log('Native sharing not available')
-        }
-      }
+      // Native sharing not available in current Telegram WebApp API
+      // Proceed with fallback methods
 
       // Fallback: send share data to bot
       const shareData = {

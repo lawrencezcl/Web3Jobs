@@ -1,8 +1,6 @@
 'use client'
 
 import { CheckCircle, Shield, Star, Clock, TrendingUp, AlertCircle, Info } from 'lucide-react'
-import { Badge } from './badge'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip'
 
 interface VerificationBadgeProps {
   type: 'verified' | 'trusted' | 'featured' | 'fast-response' | 'highly-rated' | 'pending' | 'none'
@@ -87,32 +85,18 @@ export default function VerificationBadge({
   }
 
   const badge = (
-    <Badge
-      variant="outline"
+    <span
       className={`${config.color} ${SIZE_CLASSES[size]} flex items-center border ${type === 'none' ? 'cursor-pointer hover:opacity-80' : ''} ${className}`}
       onClick={handleClick}
     >
       <Icon className={ICON_SIZES[size]} />
       <span>{config.label}</span>
-    </Badge>
+    </span>
   )
 
-  if (!showTooltip) {
-    return badge
-  }
-
-  return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          {badge}
-        </TooltipTrigger>
-        <TooltipContent side="top" className="bg-slate-800 border-slate-700 text-slate-200 max-w-xs">
-          <p>{config.tooltip}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  )
+  // For now, always return badge without tooltip
+  // TODO: Implement simple tooltip if needed
+  return badge
 }
 
 // Tooltip components (simple implementation)

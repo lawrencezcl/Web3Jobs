@@ -2,9 +2,6 @@ import './globals.css'
 import type { ReactNode } from 'react'
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata } from 'next'
-import OfflineIndicator from '@/components/ui/offline-indicator'
-import PWAInstallPrompt from '@/components/ui/pwa-install-prompt'
-import PushNotificationPrompt from '@/components/ui/push-notification-prompt'
 
 export const metadata: Metadata = {
   title: 'Web3 Jobs | Remote Blockchain Developer Careers 2024',
@@ -92,17 +89,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           rel="stylesheet"
         />
         <link rel="dns-prefetch" href="https://www.remotejobs.top" />
-        <link rel="preload" href="/og-image.png" as="image" type="image/png" />
-
-        {/* PWA Manifest */}
-        <link rel="manifest" href="/manifest.json" />
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="Web3 Jobs" />
-        <meta name="application-name" content="Web3 Jobs" />
-        <meta name="msapplication-TileColor" content="#0f172a" />
-        <meta name="theme-color" content="#3b82f6" />
 
         {/* Structured Data */}
         <script
@@ -127,9 +113,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <div className="min-h-screen">
           {children}
         </div>
-        <OfflineIndicator />
-        <PWAInstallPrompt />
-        <PushNotificationPrompt />
         <Analytics />
       </body>
     </html>

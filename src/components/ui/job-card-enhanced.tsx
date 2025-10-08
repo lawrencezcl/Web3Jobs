@@ -5,8 +5,8 @@ import { Card } from './card'
 import { Badge } from './badge'
 import { Button } from './button'
 import { MapPin, DollarSign, ExternalLink, ArrowRight, Calendar, Users, Clock } from 'lucide-react'
-import { BookmarkButton } from './bookmark-button'
-import { VerificationBadge } from './verification-badge'
+import BookmarkButton from './bookmark-button'
+import VerificationBadge from './verification-badge'
 import Link from 'next/link'
 
 type Job = {

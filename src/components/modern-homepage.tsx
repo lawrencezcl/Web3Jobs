@@ -354,7 +354,7 @@ export default function ModernHomepage({ initialData }: ModernHomepageProps) {
         <div className="max-w-6xl mx-auto">
           <div className="bg-slate-900/50 backdrop-blur-sm rounded-2xl p-6 mb-8 border border-slate-700/50">
             <AdvancedFilters
-              onFiltersChange={setAdvancedFilters}
+              onFiltersChange={(filters) => setAdvancedFilters(prev => ({ ...prev, ...filters }))}
               className="mb-6"
             />
             <div className="flex flex-wrap gap-4 mb-4">

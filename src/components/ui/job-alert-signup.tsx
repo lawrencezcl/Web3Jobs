@@ -4,7 +4,6 @@ import { useState, useCallback } from 'react'
 import { Input } from './input'
 import { Button } from './button'
 import { Card } from './card'
-import { Badge } from './badge'
 import { Bell, CheckCircle, Mail, AlertCircle, X } from 'lucide-react'
 
 interface JobAlertSignupProps {
@@ -189,7 +188,7 @@ export default function JobAlertSignup({ className }: JobAlertSignupProps) {
                 <span className="text-sm text-slate-600">Selected:</span>
                 <div className="flex flex-wrap gap-1">
                   {selectedTopics.map((topic) => (
-                    <Badge key={topic} variant="secondary" className="text-xs">
+                    <span key={topic} className="bg-slate-700 text-slate-300 px-2 py-1 rounded-md text-xs flex items-center gap-1">
                       {topic}
                       <button
                         type="button"
@@ -198,7 +197,7 @@ export default function JobAlertSignup({ className }: JobAlertSignupProps) {
                       >
                         ×
                       </button>
-                    </Badge>
+                    </span>
                   ))}
                 </div>
               </div>

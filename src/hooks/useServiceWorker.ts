@@ -28,11 +28,13 @@ export function useServiceWorker() {
           // Check for updates
           registration.addEventListener('updatefound', () => {
             const installingWorker = registration.installing
-            installingWorker.addEventListener('statechange', () => {
-              if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                setIsUpdateAvailable(true)
-              }
-            })
+            if (installingWorker) {
+              installingWorker.addEventListener('statechange', () => {
+                if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  setIsUpdateAvailable(true)
+                }
+              })
+            }
           })
         })
         .catch((error) => {

@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/auth-context'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import BookmarkButton from '@/components/ui/bookmark-button'
 import {
   Brain,
@@ -35,6 +34,7 @@ interface RecommendedJob {
   postedAt?: string | null
   salary?: string | null
   description?: string | null
+  createdAt?: string | null
   recommendationScore: number
   recommendationReasons: string[]
 }
@@ -114,9 +114,9 @@ export default function RecommendedJobsPage() {
           <p className="text-slate-400 mb-6">
             Sign in to get personalized job recommendations powered by AI
           </p>
-          <Button asChild>
-            <Link href="/auth">Sign In</Link>
-          </Button>
+          <Link href="/auth" className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2">
+            Sign In
+          </Link>
         </Card>
       </div>
     )
@@ -179,9 +179,7 @@ export default function RecommendedJobsPage() {
                   with your skills and preferences
                 </p>
               </div>
-              <Button variant="outline" size="sm" asChild>
-                <Link href="/dashboard?tab=profile">Update Profile</Link>
-              </Button>
+              <Link href="/dashboard?tab=profile" className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3">Update Profile</Link>
             </div>
           </Card>
         )}
@@ -221,9 +219,9 @@ export default function RecommendedJobsPage() {
                         ({getMatchLabel(job.recommendationScore)})
                       </span>
                     </div>
-                    <Badge variant="secondary" className="text-xs">
+                    <span className="bg-slate-700 text-slate-300 px-2 py-1 rounded-md text-xs">
                       #{index + 1} Top Match
-                    </Badge>
+                    </span>
                   </div>
 
                   {/* Job Details */}
@@ -258,9 +256,9 @@ export default function RecommendedJobsPage() {
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {job.recommendationReasons.map((reason, idx) => (
-                        <Badge key={idx} className="text-xs bg-purple-500/20 text-purple-400 border-purple-500/30">
+                        <span key={idx} className="text-xs bg-purple-500/20 text-purple-400 border-purple-500/30">
                           {reason}
-                        </Badge>
+                        </span>
                       ))}
                     </div>
                   </div>
@@ -269,14 +267,14 @@ export default function RecommendedJobsPage() {
                   {job.tags && (
                     <div className="flex flex-wrap gap-2">
                       {job.tags.split(',').filter(Boolean).slice(0, 5).map((tag, idx) => (
-                        <Badge key={idx} className="text-xs bg-slate-700 border-slate-600">
+                        <span key={idx} className="text-xs bg-slate-700 border-slate-600 px-2 py-1 rounded-md">
                           {tag.trim()}
-                        </Badge>
+                        </span>
                       ))}
                       {job.tags.split(',').filter(Boolean).length > 5 && (
-                        <Badge className="text-xs bg-slate-600 border-slate-500">
+                        <span className="text-xs bg-slate-600 border-slate-500 px-2 py-1 rounded-md">
                           +{job.tags.split(',').filter(Boolean).length - 5} more
-                        </Badge>
+                        </span>
                       )}
                     </div>
                   )}
@@ -291,13 +289,11 @@ export default function RecommendedJobsPage() {
                     </div>
                   )}
                   <div className="flex items-center space-x-2">
-                    <BookmarkButton job={job} />
-                    <Button size="sm" asChild>
-                      <a href={job.url} target="_blank" rel="noopener noreferrer">
-                        Apply
-                        <ExternalLink className="w-3 h-3 ml-1" />
-                      </a>
-                    </Button>
+                    <BookmarkButton jobId={job.id} />
+                    <a href={job.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-600 text-white hover:bg-blue-700 h-9 px-3">
+                      Apply
+                      <ExternalLink className="w-3 h-3 ml-1" />
+                    </a>
                   </div>
                 </div>
               </div>
@@ -319,12 +315,10 @@ export default function RecommendedJobsPage() {
             Start by saving jobs or updating your profile to get personalized recommendations
           </p>
           <div className="flex justify-center space-x-4">
-            <Button asChild>
-              <Link href="/jobs">Browse Jobs</Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link href="/dashboard?tab=profile">Update Profile</Link>
-            </Button>
+            <Link href="/jobs" className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-600 text-white hover:bg-blue-700 h-10 px-4 py-2">
+              Browse Jobs
+            </Link>
+            <Link href="/dashboard?tab=profile" className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">Update Profile</Link>
           </div>
         </Card>
       )}

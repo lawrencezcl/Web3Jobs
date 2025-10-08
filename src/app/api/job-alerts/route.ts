@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { Resend } from 'resend'
 
-// Initialize Resend with your API key
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Initialize Resend conditionally
+let resend: any = null
+if (process.env.RESEND_API_KEY) {
+  const { Resend } = require('resend')
+  resend = new Resend(process.env.RESEND_API_KEY)
+}
 
 export async function POST(request: NextRequest) {
   try {

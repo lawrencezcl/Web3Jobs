@@ -44,7 +44,7 @@ function calculateJobScore(
   if (userProfile.skills) {
     const matchingSkills = userProfile.skills.filter(skill =>
       jobTitle.includes(skill.toLowerCase()) ||
-      jobTags.some(tag => tag.includes(skill.toLowerCase()))
+      jobTags.some((tag: string) => tag.includes(skill.toLowerCase()))
     )
     if (matchingSkills.length > 0) {
       score += 40 * (matchingSkills.length / userProfile.skills.length)
@@ -118,7 +118,7 @@ function calculateJobScore(
     const union = new Set([...jobTagsSet, ...historyTagsSet])
     const similarity = intersection.size / union.size
 
-    return similarity > 0.3 || historyTitle.split(' ').some(word => jobTitle.includes(word))
+    return similarity > 0.3 || historyTitle.split(' ').some((word: string) => jobTitle.includes(word))
   })
 
   if (similarSaved) {
@@ -138,7 +138,7 @@ function calculateJobScore(
     { condition: job.company.includes('Coinbase'), reason: 'Top-tier company' },
     { condition: job.company.includes('Uniswap'), reason: 'Leading DeFi protocol' },
     { condition: job.company.includes('Chainlink'), reason: 'Established oracle provider' },
-    { condition: jobTitle.includes('senior') && jobSalary > 150000, reason: 'High-paying senior role' },
+    { condition: jobTitle.includes('senior') && (jobSalary || 0) > 150000, reason: 'High-paying senior role' },
     { condition: jobTags.includes('rust') || jobTags.includes('solidity'), reason: 'In-demand blockchain skills' }
   ]
 
@@ -231,18 +231,12 @@ export async function GET(request: NextRequest) {
     }
 
     // Get user's job history (saved and applied jobs)
-    const [savedJobs, appliedJobs] = await Promise.all([
+    const [savedJobsRaw, appliedJobs] = await Promise.all([
       prisma.savedJob.findMany({
         where: { userId },
-        include: {
-          job: {
-            select: {
-              id: true,
-              title: true,
-              tags: true,
-              company: true
-            }
-          }
+        select: {
+          jobId: true,
+          savedAt: true
         }
       }),
       prisma.application.findMany({
@@ -257,9 +251,22 @@ export async function GET(request: NextRequest) {
       })
     ])
 
+    // Fetch job details for saved jobs
+    const savedJobIds = savedJobsRaw.map(sj => sj.jobId)
+    const savedJobsDetails = await prisma.job.findMany({
+      where: { id: { in: savedJobIds } },
+      select: {
+        id: true,
+        title: true,
+        tags: true,
+        company: true,
+        description: true
+      }
+    })
+
     // Combine user history
     const userHistory = [
-      ...savedJobs.map(sj => ({ ...sj.job, type: 'saved' })),
+      ...savedJobsDetails.map(job => ({ ...job, type: 'saved' })),
       ...appliedJobs.map(aj => ({ jobTitle: 'Applied Job', type: 'applied' }))
     ]
 
@@ -268,14 +275,6 @@ export async function GET(request: NextRequest) {
       where: {
         postedAt: {
           gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Last 30 days
-        }
-      },
-      include: {
-        _count: {
-          select: {
-            savedJobs: true,
-            applications: true
-          }
         }
       },
       orderBy: {
@@ -322,8 +321,8 @@ export async function GET(request: NextRequest) {
       recommendations,
       total: recommendations.length,
       userProfile: {
-        hasSkills: userProfile.skills.length > 0,
-        hasPreferences: userProfile.preferredRoles.length > 0 || userProfile.preferredLocations.length > 0
+        hasSkills: (userProfile.skills || []).length > 0,
+        hasPreferences: (userProfile.preferredRoles || []).length > 0 || (userProfile.preferredLocations || []).length > 0
       }
     })
 

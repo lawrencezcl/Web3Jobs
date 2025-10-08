@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import {
   DollarSign,
@@ -82,9 +81,9 @@ export default function SalariesPage() {
 
         // Process salary data
         const processedData: SalaryData[] = jobs
-          .filter(job => job.salary) // Only include jobs with salary information
-          .map(job => parseSalaryData(job))
-          .filter(job => job.salaryMin !== undefined) // Only include successfully parsed salaries
+          .filter((job: any) => job.salary) // Only include jobs with salary information
+          .map((job: any) => parseSalaryData(job))
+          .filter((job: any) => job.salaryMin !== undefined) // Only include successfully parsed salaries
 
         setSalaryData(processedData)
         generateInsights(processedData)
@@ -288,7 +287,7 @@ export default function SalariesPage() {
     })
 
   const uniqueRoles = [...new Set(insights.map(insight => insight.role))]
-  const uniqueLocations = [...new Set(salaryData.map(job => job.location).filter(Boolean))].sort()
+  const uniqueLocations = [...new Set(salaryData.map(job => job.location).filter((loc): loc is string => Boolean(loc)))].sort()
 
   const averageSalary = salaryData.length > 0
     ? salaryData.reduce((sum, job) => sum + (job.salaryMin! + job.salaryMax!) / 2, 0) / salaryData.length
@@ -423,7 +422,7 @@ export default function SalariesPage() {
             <Card key={insight.role} className="p-6 hover:bg-slate-800/50 transition-all duration-300">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold">{insight.role}</h3>
-                <Badge variant="secondary">{insight.sampleSize} jobs</Badge>
+                <span>{insight.sampleSize} jobs</span>
               </div>
 
               <div className="space-y-3 mb-4">
@@ -464,9 +463,9 @@ export default function SalariesPage() {
                   <div className="text-slate-400 mb-1">Top Companies:</div>
                   <div className="flex flex-wrap gap-1">
                     {insight.topCompanies.map((company, index) => (
-                      <Badge key={index} className="text-xs bg-slate-700 border-slate-600">
+                      <span key={index} className="text-xs bg-slate-700 border-slate-600 px-2 py-1 rounded-md">
                         {company}
-                      </Badge>
+                      </span>
                     ))}
                   </div>
                 </div>
@@ -542,7 +541,7 @@ export default function SalariesPage() {
                   className="w-full bg-slate-800 border border-slate-700 rounded-md px-3 py-2 text-slate-100"
                 >
                   <option value="">All Locations</option>
-                  {uniqueLocations.map(location => (
+                  {uniqueLocations.map((location: string) => (
                     <option key={location} value={location}>
                       {location}
                     </option>
@@ -604,11 +603,11 @@ export default function SalariesPage() {
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-2">
                         <h3 className="text-lg font-semibold">{job.title}</h3>
-                        <Badge variant="secondary">{role}</Badge>
+                        <span>{role}</span>
                         {job.remote && (
-                          <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                          <span className="bg-green-500/20 text-green-400 border-green-500/30">
                             Remote
-                          </Badge>
+                          </span>
                         )}
                       </div>
 
@@ -632,9 +631,9 @@ export default function SalariesPage() {
                       {job.tags && (
                         <div className="flex flex-wrap gap-1">
                           {job.tags.split(',').filter(Boolean).slice(0, 3).map((tag, index) => (
-                            <Badge key={index} className="text-xs bg-slate-700 border-slate-600">
+                            <span key={index} className="text-xs bg-slate-700 border-slate-600 px-2 py-1 rounded-md">
                               {tag.trim()}
-                            </Badge>
+                            </span>
                           ))}
                         </div>
                       )}

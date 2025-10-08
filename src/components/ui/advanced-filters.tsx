@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { Filter, X, DollarSign, Briefcase, MapPin, Clock } from 'lucide-react'
 import { Button } from './button'
 import { Card } from './card'
-import { Badge } from './badge'
 import { Input } from './input'
 
 interface AdvancedFiltersProps {
@@ -122,10 +121,9 @@ export default function AdvancedFilters({ onFiltersChange, className = '' }: Adv
         <div className="flex flex-wrap gap-2 mb-4">
           {Object.entries(filters).map(([key, value]) =>
             value ? (
-              <Badge
+              <span
                 key={key}
-                variant="outline"
-                className="bg-blue-500/10 border-blue-500/20 text-blue-300 flex items-center gap-1"
+                className="bg-blue-500/10 border border-blue-500/20 text-blue-300 px-2 py-1 rounded-md text-xs flex items-center gap-1"
               >
                 <X
                   className="w-3 h-3 cursor-pointer hover:text-red-400"
@@ -138,7 +136,7 @@ export default function AdvancedFilters({ onFiltersChange, className = '' }: Adv
                 {key === 'jobType' && JOB_TYPES.find(t => t.value === value)?.label}
                 {key === 'region' && REGIONS.find(r => r.value === value)?.label}
                 {key === 'timezone' && TIMEZONES.find(t => t.value === value)?.label}
-              </Badge>
+              </span>
             ) : null
           )}
           <Button
@@ -162,9 +160,9 @@ export default function AdvancedFilters({ onFiltersChange, className = '' }: Adv
           <Filter className="w-4 h-4" />
           Advanced Filters
           {activeFilters > 0 && (
-            <Badge variant="secondary" className="ml-1 bg-blue-500 text-white">
+            <span className="ml-1 bg-blue-500 text-white">
               {activeFilters}
-            </Badge>
+            </span>
           )}
         </Button>
       </div>

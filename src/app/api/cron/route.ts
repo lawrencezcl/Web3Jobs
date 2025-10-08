@@ -10,7 +10,8 @@ export const maxDuration = 300 // 5 minutes max execution time
 async function postJobToChannel(job: any): Promise<boolean> {
   try {
     const token = process.env.JOB_POSTING_TOKEN || 'web3jobs-posting-secret'
-    const response = await fetch('https://web3-jobs-l15280ijg-lawrencezcls-projects.vercel.app/api/post-job-to-channel', {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+    const response = await fetch(`${baseUrl}/api/post-job-to-channel`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

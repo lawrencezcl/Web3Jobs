@@ -88,8 +88,8 @@ export function useSavedJobs() {
     }
 
     // Track save event
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'save_job', {
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'save_job', {
         job_id: job.id,
         company: job.company,
         title: job.title
@@ -112,8 +112,8 @@ export function useSavedJobs() {
     }
 
     // Track unsave event
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'unsave_job', {
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'unsave_job', {
         job_id: jobId
       })
     }
@@ -151,8 +151,8 @@ export function useSavedJobs() {
     }
 
     // Track clear all event
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'clear_all_saved_jobs')
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'clear_all_saved_jobs')
     }
   }
 
@@ -195,8 +195,8 @@ export function useSavedJobs() {
     URL.revokeObjectURL(url)
 
     // Track export event
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'export_saved_jobs', {
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'export_saved_jobs', {
         job_count: savedJobsData.length
       })
     }
@@ -240,8 +240,8 @@ export function useSavedJobs() {
           resolve(true)
 
           // Track import event
-          if (typeof window !== 'undefined' && window.gtag) {
-            window.gtag('event', 'import_saved_jobs', {
+          if (typeof window !== 'undefined' && (window as any).gtag) {
+            (window as any).gtag('event', 'import_saved_jobs', {
               imported_count: importedJobs.length,
               total_count: mergedJobs.length
             })

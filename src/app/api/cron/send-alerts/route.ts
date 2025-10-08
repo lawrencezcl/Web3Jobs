@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Only initialize Resend if API key is available
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
 interface JobAlertData {
   email: string
@@ -135,6 +136,10 @@ async function sendJobAlert(alertData: JobAlertData): Promise<boolean> {
 }
 
 async function sendJobsEmail(alertData: JobAlertData, jobs: any[]) {
+  if (!resend) {
+    console.log('Resend not configured, skipping email send')
+    return
+  }
   const jobsHtml = jobs.map(job => `
     <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #667eea;">
       <h3 style="color: #334155; margin: 0 0 8px 0; font-size: 18px;">
@@ -158,7 +163,7 @@ async function sendJobsEmail(alertData: JobAlertData, jobs: any[]) {
 
       ${job.tags ? `
         <div style="margin-bottom: 12px;">
-          ${job.tags.split(',').filter(Boolean).slice(0, 3).map(tag =>
+          ${job.tags.split(',').filter(Boolean).slice(0, 3).map((tag: string) =>
             `<span style="background: #f1f5f9; color: #475569; padding: 4px 8px; border-radius: 12px; font-size: 12px; margin-right: 6px;">
               ${tag.trim()}
             </span>`
@@ -220,6 +225,10 @@ async function sendJobsEmail(alertData: JobAlertData, jobs: any[]) {
 }
 
 async function sendNoJobsEmail(alertData: JobAlertData) {
+  if (!resend) {
+    console.log('Resend not configured, skipping email send')
+    return
+  }
   await resend.emails.send({
     from: 'Web3 Jobs <jobs@remotejobs.top>',
     to: alertData.email,

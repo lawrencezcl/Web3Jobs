@@ -339,7 +339,7 @@ export default function JobsPage() {
                             </div>
                             <div className="flex items-center">
                               <Clock className="w-4 h-4 mr-1" />
-                              {formatDate(job.postedAt)}
+                              {formatDate(job.postedAt || null)}
                             </div>
                           </div>
                         </div>

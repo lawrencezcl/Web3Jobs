@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    serverActions: { allowedOrigins: ['*'] },
+    serverActions: {
+      allowedOrigins: ['localhost:3000', 'www.remotejobs.top', 'remotejobs.top', 'vercel.app']
+    },
   },
   // Optimize for production builds
   compress: true,

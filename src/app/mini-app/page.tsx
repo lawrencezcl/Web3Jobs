@@ -435,9 +435,9 @@ export default function MiniAppPage() {
       }
 
       // Try to use Telegram's native sharing (WebApp 6.4+)
-      if (telegram.shareURL) {
+      if ((telegram as any).shareURL) {
         try {
-          telegram.shareURL(job.url, shareText)
+          (telegram as any).shareURL(job.url, shareText)
           return
         } catch (error) {
           console.log('shareURL not available, using clipboard')

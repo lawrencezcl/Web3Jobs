@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const resend = process.env.RESEND_API_KEY ? new (require('resend').Resend)(process.env.RESEND_API_KEY) : null
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,13 +37,13 @@ export async function POST(request: NextRequest) {
         where: { id: existingSubscription.id },
         data: {
           topics: `${keywords.join(',')},${tags.join(',')}`,
-          metadata: {
-            frequency,
+          frequency: frequency || 'daily',
+          metadata: JSON.stringify({
             remote,
             keywords,
             tags,
             updatedAt: new Date().toISOString()
-          }
+          })
         }
       })
     } else {
@@ -52,15 +51,16 @@ export async function POST(request: NextRequest) {
       await prisma.subscription.create({
         data: {
           type: 'email',
+          email: email,
           identifier: email,
           topics: `${keywords.join(',')},${tags.join(',')}`,
-          metadata: {
-            frequency,
+          frequency: frequency || 'daily',
+          metadata: JSON.stringify({
             remote,
             keywords,
             tags,
             createdAt: new Date().toISOString()
-          }
+          })
         }
       })
     }
